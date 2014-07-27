@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright 2012 Norio Agawa
+#  Copyright 2012,2014 agwlvssainokuni
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -56,7 +56,7 @@ describe FileAdmin::Selector do
       before do
         @pattern = "testdir/*/*"
       end
-      it { should =~ @list }
+      it { is_expected.to match_array @list }
     end
     context "@patternを指定(配列)して絞込み" do
       before do
@@ -64,14 +64,14 @@ describe FileAdmin::Selector do
                     "testdir/dir1/*", "testdir/dir2/*", "testdir/dir3/*"
                    ]
       end
-      it { should =~ @list }
+      it { is_expected.to match_array @list }
     end
     context "@patternと@regexpを指定して絞込み" do
       before do
         @pattern = "testdir/*/*"
         @regexp = "file(\\d{2})\\.txt$"
       end
-      it { should =~ @list[0..3] }
+      it { is_expected.to match_array @list[0..3] }
     end
     context "@patternと@regexpと@condを指定して絞込み" do
       before do
@@ -79,14 +79,14 @@ describe FileAdmin::Selector do
         @regexp = "file(\\d{2})\\.txt$"
         @cond = "$1.to_i > 20"
       end
-      it { should =~ @list[2..3] }
+      it { is_expected.to match_array @list[2..3] }
     end
     context "@pattern(文字列)と@excludeを指定して絞込み" do
       before do
         @pattern = "testdir/*/*"
         @exclude = "1"
       end
-      it { should =~ @list[0..4] }
+      it { is_expected.to match_array @list[0..4] }
     end
     context "@pattern(配列)と@excludeを指定して絞込み" do
       before do
@@ -95,7 +95,7 @@ describe FileAdmin::Selector do
                    ]
         @exclude = "1"
       end
-      it { should =~ [@list[0], @list[2], @list[4]] }
+      it { is_expected.to match_array [@list[0], @list[2], @list[4]] }
     end
   end
 
@@ -107,7 +107,7 @@ describe FileAdmin::Selector do
         @pattern = "testdir/*/file"
         @suffix = ".txt"
       end
-      it { should =~ @list[0..3] }
+      it { is_expected.to match_array @list[0..3] }
     end
     context "@patternを指定(配列)して絞込み" do
       before do
@@ -116,7 +116,7 @@ describe FileAdmin::Selector do
                    ]
         @suffix = ".txt"
       end
-      it { should =~ @list[0..3] }
+      it { is_expected.to match_array @list[0..3] }
     end
     context "@patternと@regexpを指定して絞込み" do
       before do
@@ -124,7 +124,7 @@ describe FileAdmin::Selector do
         @suffix = ".txt"
         @regexp = "file(\\d1)\\.txt$"
       end
-      it { should =~ [@list[0], @list[2]] }
+      it { is_expected.to match_array [@list[0], @list[2]] }
     end
     context "@patternと@regexpと@condを指定して絞込み" do
       before do
@@ -133,7 +133,7 @@ describe FileAdmin::Selector do
         @regexp = "file(\\d1)\\.txt$"
         @cond = "$1.to_i > 20"
       end
-      it { should =~ [@list[2]] }
+      it { is_expected.to match_array [@list[2]] }
     end
   end
 end
