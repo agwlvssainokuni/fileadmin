@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright 2012 Norio Agawa
+#  Copyright 2012,2014 agwlvssainokuni
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -43,67 +43,67 @@ describe FileAdmin::ForeachArchive do
 
     context "全指定 (patternは配列)" do
       let(:conf) { base_conf }
-      it { subject.should be_valid }
+      it { expect(subject).to be_valid }
     end
 
     context "全指定 (patternは文字列)" do
       let(:conf) { base_conf.merge("pattern" => "dir1/*") }
-      it { subject.should be_valid }
+      it { expect(subject).to be_valid }
     end
 
     context "labelなし" do
       let(:conf) { base_conf.merge("label" => nil) }
-      it { subject.should_not be_valid }
+      it { expect(subject).not_to be_valid }
     end
 
     context "basedirなし" do
       let(:conf) { base_conf.merge("basedir" => nil) }
-      it { subject.should_not be_valid }
+      it { expect(subject).not_to be_valid }
     end
 
     context "patternなし" do
       let(:conf) { base_conf.merge("pattern" => nil) }
-      it { subject.should_not be_valid }
+      it { expect(subject).not_to be_valid }
     end
 
     context "patternが空配列" do
       let(:conf) { base_conf.merge("pattern" => [ ] ) }
-      it { subject.should_not be_valid }
+      it { expect(subject).not_to be_valid }
     end
 
     context "patternが空文字の配列" do
       let(:conf) { base_conf.merge("pattern" => [ "" ] ) }
-      it { subject.should_not be_valid }
+      it { expect(subject).not_to be_valid }
     end
 
     context "regexpなし" do
       let(:conf) { base_conf.merge("regexp" => nil) }
-      it { subject.should be_valid }
+      it { expect(subject).to be_valid }
     end
 
     context "condなし" do
       let(:conf) { base_conf.merge("cond" => nil) }
-      it { subject.should be_valid }
+      it { expect(subject).to be_valid }
     end
 
     context "excludeなし" do
       let(:conf) { base_conf.merge("exclude" => nil) }
-      it { subject.should be_valid }
+      it { expect(subject).to be_valid }
     end
 
     context "suffixなし" do
       let(:conf) { base_conf.merge("suffix" => nil) }
-      it { subject.should be_valid }
+      it { expect(subject).to be_valid }
     end
 
     context "to_dirなし" do
       let(:conf) { base_conf.merge("to_dir" => nil) }
-      it { subject.should be_valid }
+      it { expect(subject).to be_valid }
     end
 
     context "chownなし" do
       let(:conf) { base_conf.merge("chown" => nil) }
-      it { subject.should be_valid }
+      it { expect(subject).to be_valid }
     end
   end
 
@@ -147,45 +147,45 @@ describe FileAdmin::ForeachArchive do
         end
         context "通常 (retval,inarc(arc,orig,unzip),not_inarc(arc,orig))" do
           let(:dry_run) { false }
-          it { @retval.should be_true }
+          it { expect(@retval).to be_truthy }
           it {
             files_in_archive.each {|f|
-              Pathname(arcfile(f)).should be_file
+              expect(Pathname(arcfile(f))).to be_file
             }
           }
           it {
             files_in_archive.each {|f|
-              Pathname("testdir/src/#{f}").should_not exist
+              expect(Pathname("testdir/src/#{f}")).not_to exist
             }
           }
           it {
             files_in_archive.each {|f|
               %x{unzip -l #{arcfile(f)} #{f} 2>&1}
-              $?.should == 0
+              expect($?).to eq 0
             }
           }
           it {
             files_not_in_archive.each {|f|
-              Pathname(arcfile(f)).should_not exist
+              expect(Pathname(arcfile(f))).not_to exist
             }
           }
           it {
             files_not_in_archive.each {|f|
-              Pathname("testdir/src/#{f}").should be_file
+              expect(Pathname("testdir/src/#{f}")).to be_file
             }
           }
         end
         context "ドライ (retval,arcfile,file_list)" do
           let(:dry_run) { true }
-          it { @retval.should be_true }
+          it { expect(@retval).to be_truthy }
           it {
             file_list.each {|f|
-              Pathname(arcfile(f)).should_not exist
+              expect(Pathname(arcfile(f))).not_to exist
             }
           }
           it {
             file_list.each {|f|
-              Pathname("testdir/src/#{f}").should be_file
+              expect(Pathname("testdir/src/#{f}")).to be_file
             }
           }
         end
@@ -295,29 +295,29 @@ describe FileAdmin::ForeachArchive do
         end
         context "通常 (retval,arcfile,file_list)" do
           let(:dry_run) { false }
-          it { @retval.should be_true }
+          it { expect(@retval).to be_truthy }
           it {
             file_list.each {|f|
-              Pathname(arcfile(f)).should_not exist
+              expect(Pathname(arcfile(f))).not_to exist
             }
           }
           it {
             file_list.each {|f|
-              Pathname("testdir/src/#{f}").should be_file
+              expect(Pathname("testdir/src/#{f}")).to be_file
             }
           }
         end
         context "ドライ (retval,arcfile,file_list)" do
           let(:dry_run) { true }
-          it { @retval.should be_true }
+          it { expect(@retval).to be_truthy }
           it {
             file_list.each {|f|
-              Pathname(arcfile(f)).should_not exist
+              expect(Pathname(arcfile(f))).not_to exist
             }
           }
           it {
             file_list.each {|f|
-              Pathname("testdir/src/#{f}").should be_file
+              expect(Pathname("testdir/src/#{f}")).to be_file
             }
           }
         end
@@ -377,30 +377,30 @@ describe FileAdmin::ForeachArchive do
 
         context "通常 (retval,arcfile,file_list)" do
           let(:dry_run) { false }
-          it { @retval.should be_false }
+          it { expect(@retval).to be_falsey }
           it {
             file_list.each {|f|
-              Pathname(arcfile(f)).should_not exist
+              expect(Pathname(arcfile(f))).not_to exist
             }
           }
           it {
             file_list.each {|f|
-              Pathname("testdir/src/#{f}").should be_file
+              expect(Pathname("testdir/src/#{f}")).to be_file
             }
           }
         end
         context "ドライ (retval,arcfile,file_list); dryでもchdirする" do
           let(:dry_run) { true }
           # dry_runでもchdirするのでfalse
-          it { @retval.should be_false }
+          it { expect(@retval).to be_falsey }
           it {
             file_list.each {|f|
-              Pathname(arcfile(f)).should_not exist
+              expect(Pathname(arcfile(f))).not_to exist
             }
           }
           it {
             file_list.each {|f|
-              Pathname("testdir/src/#{f}").should be_file
+              expect(Pathname("testdir/src/#{f}")).to be_file
             }
           }
         end
@@ -421,29 +421,29 @@ describe FileAdmin::ForeachArchive do
 
         context "通常 (retval,arcfile,file_list)" do
           let(:dry_run) { false }
-          it { @retval.should be_false }
+          it { expect(@retval).to be_falsey }
           it {
             file_list.each {|f|
-              Pathname(arcfile(f)).should_not exist
+              expect(Pathname(arcfile(f))).not_to exist
             }
           }
           it {
             file_list.each {|f|
-              Pathname("testdir/src/#{f}").should be_file
+              expect(Pathname("testdir/src/#{f}")).to be_file
             }
           }
         end
         context "ドライ (retval,arcfile,file_list)" do
           let(:dry_run) { true }
-          it { @retval.should be_true }
+          it { expect(@retval).to be_truthy }
           it {
             file_list.each {|f|
-              Pathname(arcfile(f)).should_not exist
+              expect(Pathname(arcfile(f))).not_to exist
             }
           }
           it {
             file_list.each {|f|
-              Pathname("testdir/src/#{f}").should be_file
+              expect(Pathname("testdir/src/#{f}")).to be_file
             }
           }
         end
@@ -463,36 +463,36 @@ describe FileAdmin::ForeachArchive do
 
         context "通常 (retval,arcfile,file_list); 1つめのzipは作られる" do
           let(:dry_run) { false }
-          it { @retval.should be_false }
+          it { expect(@retval).to be_falsey }
           # 1つめのzipは作られる
           it {
             file_list[1..-1].each {|f|
-              Pathname(arcfile(f)).should_not exist
+              expect(Pathname(arcfile(f))).not_to exist
             }
             Array(file_list[0]).each {|f|
-              Pathname(arcfile(f)).should be_file
+              expect(Pathname(arcfile(f))).to be_file
             }
           }
           it {
             file_list[1..-1].each {|f|
-              Pathname("testdir/src/#{f}").should be_file
+              expect(Pathname("testdir/src/#{f}")).to be_file
             }
             Array(file_list[0]).each {|f|
-              Pathname("testdir/src/#{f}").should_not exist
+              expect(Pathname("testdir/src/#{f}")).not_to exist
             }
           }
         end
         context "ドライ (retval,arcfile,file_list)" do
           let(:dry_run) { true }
-          it { @retval.should be_true }
+          it { expect(@retval).to be_truthy }
           it {
             file_list.each {|f|
-              Pathname(arcfile(f)).should_not exist
+              expect(Pathname(arcfile(f))).not_to exist
             }
           }
           it {
             file_list.each {|f|
-              Pathname("testdir/src/#{f}").should be_file
+              expect(Pathname("testdir/src/#{f}")).to be_file
             }
           }
         end
