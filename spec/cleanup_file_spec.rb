@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright 2012 Norio Agawa
+#  Copyright 2012,2014 agwlvssainokuni
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -42,72 +42,72 @@ describe FileAdmin::CleanupFile do
 
     context "全指定 (patternは配列)" do
       let(:conf) { base_conf }
-      it { subject.should be_valid }
+      it { expect(subject).to be_valid }
     end
 
     context "全指定 (patternは文字列)" do
       let(:conf) { base_conf.merge("pattern" => "dir1/file_") }
-      it { subject.should be_valid }
+      it { expect(subject).to be_valid }
     end
 
     context "labelなし" do
       let(:conf) { base_conf.merge("label" => nil) }
-      it { subject.should_not be_valid }
+      it { expect(subject).not_to be_valid }
     end
 
     context "basedirなし" do
       let(:conf) { base_conf.merge("basedir" => nil) }
-      it { subject.should_not be_valid }
+      it { expect(subject).not_to be_valid }
     end
 
     context "patternなし" do
       let(:conf) { base_conf.merge("pattern" => nil) }
-      it { subject.should_not be_valid }
+      it { expect(subject).not_to be_valid }
     end
 
     context "patternが空配列" do
       let(:conf) { base_conf.merge("pattern" => [ ] ) }
-      it { subject.should_not be_valid }
+      it { expect(subject).not_to be_valid }
     end
 
     context "patternが空文字の配列" do
       let(:conf) { base_conf.merge("pattern" => [ "" ] ) }
-      it { subject.should_not be_valid }
+      it { expect(subject).not_to be_valid }
     end
 
     context "regexpなし" do
       let(:conf) { base_conf.merge("regexp" => nil) }
-      it { subject.should be_valid }
+      it { expect(subject).to be_valid }
     end
 
     context "condなし" do
       let(:conf) { base_conf.merge("cond" => nil) }
-      it { subject.should be_valid }
+      it { expect(subject).to be_valid }
     end
 
     context "suffixなし" do
       let(:conf) { base_conf.merge("suffix" => nil) }
-      it { subject.should be_valid }
+      it { expect(subject).to be_valid }
     end
 
     context "tsformatなし" do
       let(:conf) { base_conf.merge("tsformat" => nil) }
-      it { subject.should_not be_valid }
+      it { expect(subject).not_to be_valid }
     end
 
     context "tsformat形式不正" do
       let(:conf) { base_conf.merge("tsformat" => "invalid") }
-      it { subject.should_not be_valid }
+      it { expect(subject).not_to be_valid }
     end
 
     context "grace_periodなし" do
       let(:conf) { base_conf.merge("grace_period" => nil) }
-      it { subject.should_not be_valid }
+      it { expect(subject).not_to be_valid }
     end
 
     context "grace_period形式不正" do
       let(:conf) { base_conf.merge("grace_period" => "invalid") }
-      it { subject.should_not be_valid }
+      it { expect(subject).not_to be_valid }
     end
   end
 
@@ -145,24 +145,24 @@ describe FileAdmin::CleanupFile do
         end
         context "通常 (retval,src(proc,not))" do
           let(:dry_run) { false }
-          it { @retval.should be_true }
+          it { expect(@retval).to be_truthy }
           it {
             files_in_process.each {|f|
-              Pathname("testdir/src/#{f}").should_not exist
+              expect(Pathname("testdir/src/#{f}")).not_to exist
             }
           }
           it {
             files_not_in_process.each {|f|
-              Pathname("testdir/src/#{f}").should be_file
+              expect(Pathname("testdir/src/#{f}")).to be_file
             }
           }
         end
         context "ドライ (retval,src,dest)" do
           let(:dry_run) { true }
-          it { @retval.should be_true }
+          it { expect(@retval).to be_truthy }
           it {
             file_list.each {|f|
-              Pathname("testdir/src/#{f}").should be_file
+              expect(Pathname("testdir/src/#{f}")).to be_file
             }
           }
         end
@@ -223,19 +223,19 @@ describe FileAdmin::CleanupFile do
         end
         context "通常 (retval,src)" do
           let(:dry_run) { false }
-          it { @retval.should be_true }
+          it { expect(@retval).to be_truthy }
           it {
             file_list.each {|f|
-              Pathname("testdir/src/#{f}").should be_file
+              expect(Pathname("testdir/src/#{f}")).to be_file
             }
           }
         end
         context "ドライ (retval,src)" do
           let(:dry_run) { true }
-          it { @retval.should be_true }
+          it { expect(@retval).to be_truthy }
           it {
             file_list.each {|f|
-              Pathname("testdir/src/#{f}").should be_file
+              expect(Pathname("testdir/src/#{f}")).to be_file
             }
           }
         end
@@ -290,20 +290,20 @@ describe FileAdmin::CleanupFile do
 
         context "通常 (retval,src)" do
           let(:dry_run) { false }
-          it { @retval.should be_false }
+          it { expect(@retval).to be_falsey }
           it {
             file_list.each {|f|
-              Pathname("testdir/src/#{f}").should be_file
+              expect(Pathname("testdir/src/#{f}")).to be_file
             }
           }
         end
         context "ドライ (retval,src); dryでもchdirする" do
           let(:dry_run) { true }
           # dry_runでもchdirするのでfalse
-          it { @retval.should be_false }
+          it { expect(@retval).to be_falsey }
           it {
             file_list.each {|f|
-              Pathname("testdir/src/#{f}").should be_file
+              expect(Pathname("testdir/src/#{f}")).to be_file
             }
           }
         end
@@ -319,19 +319,19 @@ describe FileAdmin::CleanupFile do
 
         context "通常 (retval,src)" do
           let(:dry_run) { false }
-          it { @retval.should be_false }
+          it { expect(@retval).to be_falsey }
           it {
             file_list.each {|f|
-              Pathname("testdir/src/#{f}").should be_file
+              expect(Pathname("testdir/src/#{f}")).to be_file
             }
           }
         end
         context "ドライ (retval,src)" do
           let(:dry_run) { true }
-          it { @retval.should be_true }
+          it { expect(@retval).to be_truthy }
           it {
             file_list.each {|f|
-              Pathname("testdir/src/#{f}").should be_file
+              expect(Pathname("testdir/src/#{f}")).to be_file
             }
           }
         end
