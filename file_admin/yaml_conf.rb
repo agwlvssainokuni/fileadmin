@@ -20,18 +20,8 @@ require File.join(File.dirname(__FILE__), 'foreach_archive')
 require File.join(File.dirname(__FILE__), 'aggregate_archive')
 require File.join(File.dirname(__FILE__), 'backup_file')
 require File.join(File.dirname(__FILE__), 'cleanup_file')
-require 'yaml'
 
-module FileAdmin
-
-  # YAML形式を読み込む際の「タグ=>オブジェクト 対応」を定義する。
-  {
-    "foreach" => ForeachArchive,
-    "aggregate" => AggregateArchive,
-    "backup" => BackupFile,
-    "cleanup" => CleanupFile
-  }.each_pair {|tag, klass| 
-    YAML.add_private_type(tag) {|t, v| YAML.object_maker(klass, v) }
-  }
-
-end
+FOREACH = FileAdmin::ForeachArchive
+AGGREGATE = FileAdmin::AggregateArchive
+BACKUP = FileAdmin::BackupFile
+CLEANUP = FileAdmin::CleanupFile

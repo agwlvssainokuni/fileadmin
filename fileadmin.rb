@@ -47,7 +47,7 @@ logger.debug("console  = %s", FileAdmin::Logger.console_enabled)
 
 
 ok = true
-YAML.each_document(ARGF) {|doc|
+YAML.load_stream(ARGF) {|doc|
   doc.each {|conf|
     if PARAM[:conftest]
       ok = false unless conf.valid?()

@@ -5,7 +5,7 @@ basedir=$(cd $(dirname ${BASH_SOURCE[0]}) && pwd)
 ruby -I ${basedir}/.. ${basedir}/../fileadmin.rb $* <(
 
 cat <<__CONFIG__
-- !!foreach
+- !ruby/object:FOREACH
   label: 一対一アーカイブ
   basedir: ${basedir}/0file
   pattern: foreach_*.txt
@@ -13,7 +13,7 @@ cat <<__CONFIG__
   suffix: ".txt"
   to_dir: ${basedir}/1arch
 
-- !!aggregate
+- !ruby/object:AGGREGATE
   label: 集約アーカイブ
   basedir: ${basedir}/0file
   pattern: aggregate_*.txt
@@ -21,7 +21,7 @@ cat <<__CONFIG__
   tsformat: "%Y%m%d%H%M%S"
   to_dir: ${basedir}/1arch
 
-- !!backup
+- !ruby/object:BACKUP
   label: 退避テスト
   basedir: ${basedir}/1arch
   pattern:
@@ -32,7 +32,7 @@ cat <<__CONFIG__
   grace_period: "1 day ago"
   to_dir: ${basedir}/2back
 
-- !!cleanup
+- !ruby/object:CLEANUP
   label: 削除テスト
   basedir: ${basedir}/2back
   pattern:
