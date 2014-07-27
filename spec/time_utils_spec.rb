@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright 2012 Norio Agawa
+#  Copyright 2012,2014 agwlvssainokuni
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ describe FileAdmin::TimeUtils do
 
     context "計算可能" do
       let(:value) { "1 year ago 1 month ago 1 day ago" }
-      it { should ==  Time.parse("2009/09/09") }
+      it { is_expected.to eq Time.parse("2009/09/09") }
     end
 
     context "計算不可(形式不正で例外)" do
