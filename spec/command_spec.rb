@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright 2012 Norio Agawa
+#  Copyright 2012,2014 agwlvssainokuni
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -51,18 +51,18 @@ describe FileAdmin::Command do
       before do
         @retval = subject
       end
-      it { @retval.should be_true }
-      it { from_file.should_not exist }
-      it { to_file.should be_file }
+      it { expect(@retval).to be_truthy }
+      it { expect(from_file).not_to exist }
+      it { expect(to_file).to be_file }
     end
     context "失敗/権限無し (retval, from_file, to_file)" do
       before do
         %x{chmod -w testdir/dest}
         @retval = subject
       end
-      it { @retval.should be_false }
-      it { from_file.should be_file }
-      it { to_file.should_not exist }
+      it { expect(@retval).to be_falsey }
+      it { expect(from_file).to be_file }
+      it { expect(to_file).not_to exist }
     end
   end
 
@@ -78,16 +78,16 @@ describe FileAdmin::Command do
       before do
         @retval = subject
       end
-      it { @retval.should be_true }
-      it { file.should_not exist }
+      it { expect(@retval).to be_truthy }
+      it { expect(file).not_to exist }
     end
     context "失敗/権限なし (retval, file)" do
       before do
         %x{chmod -w testdir}
         @retval = subject
       end
-      it { @retval.should be_false }
-      it { file.should be_file }
+      it { expect(@retval).to be_falsey }
+      it { expect(file).to be_file }
     end
   end
 
@@ -109,16 +109,16 @@ describe FileAdmin::Command do
       before do
         @retval = subject
       end
-      it { @retval.should be_true }
-      it { zipfile.should exist }
+      it { expect(@retval).to be_truthy }
+      it { expect(zipfile).to exist }
       it {
         @list.each {|file|
           %x{unzip -l #{zipfile} #{file} 2>&1}
-          $?.should == 0
+          expect($?).to eq 0
         }
       }
       it {
-        @list.each {|file| Pathname(file).should_not exist }
+        @list.each {|file| expect(Pathname(file)).not_to exist }
       }
     end
     context "失敗/権限なし (retval, zip, file)" do
@@ -126,10 +126,10 @@ describe FileAdmin::Command do
         %x{chmod -w testdir}
         @retval = subject
       end
-      it { @retval.should be_false }
-      it { zipfile.should_not be_file }
+      it { expect(@retval).to be_falsey }
+      it { expect(zipfile).not_to be_file }
       it {
-        @list.each {|file| Pathname(file).should be_file }
+        @list.each {|file| expect(Pathname(file)).to be_file }
       }
     end
   end
@@ -152,16 +152,16 @@ describe FileAdmin::Command do
       before do
         @retval = subject
       end
-      it { @retval.should be_true }
-      it { zipfile.should exist }
+      it { expect(@retval).to be_truthy }
+      it { expect(zipfile).to exist }
       it {
         @list.each {|file|
           %x{unzip -l #{zipfile} #{file} 2>&1}
-          $?.should == 0
+          expect($?).to eq 0
         }
       }
       it {
-        @list.each {|file| Pathname(file).should be_file }
+        @list.each {|file| expect(Pathname(file)).to be_file }
       }
     end
     context "失敗/権限なし (retval, zip, file)" do
@@ -169,10 +169,10 @@ describe FileAdmin::Command do
         %x{chmod -w testdir}
         @retval = subject
       end
-      it { @retval.should be_false }
-      it { zipfile.should_not be_file }
+      it { expect(@retval).to be_falsey }
+      it { expect(zipfile).not_to be_file }
       it {
-        @list.each {|file| Pathname(file).should be_file }
+        @list.each {|file| expect(Pathname(file)).to be_file }
       }
     end
   end
