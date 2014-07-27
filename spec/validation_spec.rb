@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright 2012 Norio Agawa
+#  Copyright 2012,2014 agwlvssainokuni
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -32,23 +32,25 @@ describe FileAdmin::Validation do
   end
 
   describe "check_required_string" do
-    subject { check_required_string(@name, value) }
+    subject {
+check_required_string(@name, value)
+}
 
     context "空でない文字列" do
       let(:value) { "aaa" }
-      it { should be_true }
+      it { is_expected.to be_truthy }
     end
     context "nil" do
       let(:value) { nil }
-      it { should be_false }
+      it { is_expected.to be_falsey }
     end
     context "空文字列" do
       let(:value) { "" }
-      it { should be_false }
+      it { is_expected.to be_falsey }
     end
     context "文字列でない(数値:1)" do
       let(:value) { 1 }
-      it { should be_false }
+      it { is_expected.to be_falsey }
     end
   end
 
@@ -57,23 +59,23 @@ describe FileAdmin::Validation do
 
     context "空でない配列" do
       let(:value) { ["aaa"] }
-      it { should be_true }
+      it { is_expected.to be_truthy }
     end
     context "nil" do
       let(:value) { nil }
-      it { should be_false }
+      it { is_expected.to be_falsey }
     end
     context "空配列" do
       let(:value) { [] }
-      it { should be_false }
+      it { is_expected.to be_falsey }
     end
     context "空文字列を含む配列" do
       let(:value) { [""] }
-      it { should be_false }
+      it { is_expected.to be_falsey }
     end
     context "配列でない(数値:1)" do
       let(:value) { 1 }
-      it { should be_false }
+      it { is_expected.to be_falsey }
     end
   end
 
@@ -83,79 +85,79 @@ describe FileAdmin::Validation do
     context "年月日時分秒(%Y%m%d%H%M%S)の並び" do
       context "%Y" do
         let(:value) { "%Y" }
-        it { should be_true }
+        it { is_expected.to be_truthy }
       end
       context "%Y%m" do
         let(:value) { "%Y%m" }
-        it { should be_true }
+        it { is_expected.to be_truthy }
       end
       context "%Y%m%d" do
         let(:value) { "%Y%m%d" }
-        it { should be_true }
+        it { is_expected.to be_truthy }
       end
       context "%Y%m%d%H" do
         let(:value) { "%Y%m%d%H" }
-        it { should be_true }
+        it { is_expected.to be_truthy }
       end
       context "%Y%m%d%H%M" do
         let(:value) { "%Y%m%d%H%M" }
-        it { should be_true }
+        it { is_expected.to be_truthy }
       end
       context "%Y%m%d%H%M%S" do
         let(:value) { "%Y%m%d%H%M%S" }
-        it { should be_true }
+        it { is_expected.to be_truthy }
       end
     end
 
     context "nil" do
       let(:value) { nil }
-      it { should be_true }
+      it { is_expected.to be_truthy }
     end
 
     context "空文字列" do
       let(:value) { "" }
-      it { should be_true }
+      it { is_expected.to be_truthy }
     end
 
     context "月日時分秒(%m%d%H%M%S)の単独指定" do
       context "%m" do
         let(:value) { "%m" }
-        it { should be_false }
+        it { is_expected.to be_falsey }
       end
       context "%d" do
         let(:value) { "%d" }
-        it { should be_false }
+        it { is_expected.to be_falsey }
       end
       context "%H" do
         let(:value) { "%H" }
-        it { should be_false }
+        it { is_expected.to be_falsey }
       end
       context "%M" do
         let(:value) { "%M" }
-        it { should be_false }
+        it { is_expected.to be_falsey }
       end
       context "%S" do
         let(:value) { "%S" }
-        it { should be_false }
+        it { is_expected.to be_falsey }
       end
     end
 
     context "年月日時分秒(%M%m%d%H%M%S)の中抜き指定" do
       context "%Y%d" do
         let(:value) { "%Y%d" }
-        it { should be_false }
+        it { is_expected.to be_falsey }
       end
       context "%Y%m%H" do
         let(:value) { "%Y%m%H" }
-        it { should be_false }
+        it { is_expected.to be_falsey }
       end
       context "%Y%m%d%M" do
         let(:value) { "%Y%m%d%M" }
-        it { should be_false }
+        it { is_expected.to be_falsey }
       end
       context "%Y%m%d%H%S" do
         let(:value) { "%Y%m%d%H%S" }
-        it { should be_false }
+        it { is_expected.to be_falsey }
       end
     end
   end
@@ -166,194 +168,194 @@ describe FileAdmin::Validation do
     context "年月週日時分秒" do
       context "123 year ago" do
         let(:value) { "123 year ago" }
-        it { should be_true }
+        it { is_expected.to be_truthy }
       end
       context "123 years ago" do
         let(:value) { "123 years ago" }
-        it { should be_true }
+        it { is_expected.to be_truthy }
       end
       context "123 month ago" do
         let(:value) { "123 month ago" }
-        it { should be_true }
+        it { is_expected.to be_truthy }
       end
       context "123 months ago" do
         let(:value) { "123 months ago" }
-        it { should be_true }
+        it { is_expected.to be_truthy }
       end
       context "123 week ago" do
         let(:value) { "123 week ago" }
-        it { should be_true }
+        it { is_expected.to be_truthy }
       end
       context "123 weeks ago" do
         let(:value) { "123 weeks ago" }
-        it { should be_true }
+        it { is_expected.to be_truthy }
       end
       context "123 day ago" do
         let(:value) { "123 day ago" }
-        it { should be_true }
+        it { is_expected.to be_truthy }
       end
       context "123 days ago" do
         let(:value) { "123 days ago" }
-        it { should be_true }
+        it { is_expected.to be_truthy }
       end
       context "123 hour ago" do
         let(:value) { "123 hour ago" }
-        it { should be_true }
+        it { is_expected.to be_truthy }
       end
       context "123 hours ago" do
         let(:value) { "123 hours ago" }
-        it { should be_true }
+        it { is_expected.to be_truthy }
       end
       context "123 minute ago" do
         let(:value) { "123 minute ago" }
-        it { should be_true }
+        it { is_expected.to be_truthy }
       end
       context "123 minutes ago" do
         let(:value) { "123 minutes ago" }
-        it { should be_true }
+        it { is_expected.to be_truthy }
       end
       context "123 second ago" do
         let(:value) { "123 second ago" }
-        it { should be_true }
+        it { is_expected.to be_truthy }
       end
       context "123 seconds ago" do
         let(:value) { "123 seconds ago" }
-        it { should be_true }
+        it { is_expected.to be_truthy }
       end
     end
 
     context "nil" do
       let(:value) { nil }
-      it { should be_true }
+      it { is_expected.to be_truthy }
     end
 
     context "空文字列" do
       let(:value) { "" }
-      it { should be_true }
+      it { is_expected.to be_truthy }
     end
 
     context "数字指定なし" do
       context "year ago" do
         let(:value) { "year ago" }
-        it { should be_false }
+        it { is_expected.to be_falsey }
       end
       context "years ago" do
         let(:value) { "years ago" }
-        it { should be_false }
+        it { is_expected.to be_falsey }
       end
       context "month ago" do
         let(:value) { "month ago" }
-        it { should be_false }
+        it { is_expected.to be_falsey }
       end
       context "months ago" do
         let(:value) { "months ago" }
-        it { should be_false }
+        it { is_expected.to be_falsey }
       end
       context "week ago" do
         let(:value) { "week ago" }
-        it { should be_false }
+        it { is_expected.to be_falsey }
       end
       context "weeks ago" do
         let(:value) { "weeks ago" }
-        it { should be_false }
+        it { is_expected.to be_falsey }
       end
       context "day ago" do
         let(:value) { "day ago" }
-        it { should be_false }
+        it { is_expected.to be_falsey }
       end
       context "days ago" do
         let(:value) { "days ago" }
-        it { should be_false }
+        it { is_expected.to be_falsey }
       end
       context "hour ago" do
         let(:value) { "hour ago" }
-        it { should be_false }
+        it { is_expected.to be_falsey }
       end
       context "hours ago" do
         let(:value) { "hours ago" }
-        it { should be_false }
+        it { is_expected.to be_falsey }
       end
       context "minute ago" do
         let(:value) { "minute ago" }
-        it { should be_false }
+        it { is_expected.to be_falsey }
       end
       context "minutes ago" do
         let(:value) { "minutes ago" }
-        it { should be_false }
+        it { is_expected.to be_falsey }
       end
       context "second ago" do
         let(:value) { "second ago" }
-        it { should be_false }
+        it { is_expected.to be_falsey }
       end
       context "seconds ago" do
         let(:value) { "seconds ago" }
-        it { should be_false }
+        it { is_expected.to be_falsey }
       end
     end
 
     context "単位指定なし" do
       context "123 ago" do
         let(:value) { "123 ago" }
-        it { should be_false }
+        it { is_expected.to be_falsey }
       end
     end
 
     context "agoなし" do
       context "123 year" do
         let(:value) { "123 year" }
-        it { should be_false }
+        it { is_expected.to be_falsey }
       end
       context "123 years" do
         let(:value) { "123 years" }
-        it { should be_false }
+        it { is_expected.to be_falsey }
       end
       context "123 month" do
         let(:value) { "123 month" }
-        it { should be_false }
+        it { is_expected.to be_falsey }
       end
       context "123 months" do
         let(:value) { "123 months" }
-        it { should be_false }
+        it { is_expected.to be_falsey }
       end
       context "123 week" do
         let(:value) { "123 week" }
-        it { should be_false }
+        it { is_expected.to be_falsey }
       end
       context "123 weeks" do
         let(:value) { "123 weeks" }
-        it { should be_false }
+        it { is_expected.to be_falsey }
       end
       context "123 day" do
         let(:value) { "123 day" }
-        it { should be_false }
+        it { is_expected.to be_falsey }
       end
       context "123 days" do
         let(:value) { "123 days" }
-        it { should be_false }
+        it { is_expected.to be_falsey }
       end
       context "123 hour" do
         let(:value) { "123 hour" }
-        it { should be_false }
+        it { is_expected.to be_falsey }
       end
       context "123 hours" do
         let(:value) { "123 hours" }
-        it { should be_false }
+        it { is_expected.to be_falsey }
       end
       context "123 minute" do
         let(:value) { "123 minute" }
-        it { should be_false }
+        it { is_expected.to be_falsey }
       end
       context "123 minutes" do
         let(:value) { "123 minutes" }
-        it { should be_false }
+        it { is_expected.to be_falsey }
       end
       context "123 second" do
         let(:value) { "123 second" }
-        it { should be_false }
+        it { is_expected.to be_falsey }
       end
       context "123 seconds" do
         let(:value) { "123 seconds" }
-        it { should be_false }
+        it { is_expected.to be_falsey }
       end
     end
 
