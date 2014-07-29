@@ -108,7 +108,7 @@ module FileAdmin
         [sumcmd, "-b", *filelist],
         ["ssh", host, rcmd]
       ) {|so, th| [so.readlines(nil), th.value] }
-      unless status.success?
+      unless status[0].success? && status[1].success?
         @logger.error("%s -b %s | ssh %s \"%s\": NG, status=%d, out=%s",
                       sumcmd, filelist * " ", host, rcmd, status, out)
         return false
