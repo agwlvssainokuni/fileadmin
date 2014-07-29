@@ -83,16 +83,49 @@ module FileAdmin
       return true
     end
 
-    # リモートからローカルにディレクトリを同期 (RSYNC) する。
-    def rsync(remote, src, dest, ext, dry_run = false)
+    # リモートディレクトリからローカルディレクトリに同期 (RSYNC) する。
+    def rsync(host, rdir, ldir, ext, dry_run = false)
       @logger.debug("processing: rsync -a --exclude=*.%s %s:%s %s",
-                    ext, remote, src, dest)
+                    ext, host, rdir, ldir)
       return true if dry_run
       out, status = Open3.capture2e("rsync", "-a", "--exclude=*.#{ext}",
-                                    "#{remote}:#{src}", dest)
+                                    "#{host}:#{rdir}", ldir)
       unless status.success?
-        @logger.error("processing: rsync -a --exclude=*.%s %s:%s %s: NG, status=%d, out=%s",
-                      ext, remote, src, dest, status, out)
+        @logger.error("rsync -a --exclude=*.%s %s:%s %s: NG, status=%d, out=%s",
+                      ext, host, rdir, ldir, status, out)
+        return false
+      end
+      return true
+    end
+
+    # リモートとローカルのファイルをチェックサムで検証する。
+    def checksum(host, rdir, filelist, sumcmd = "sha1sum", dry_run = false)
+      rcmd = sprintf("(cd %s; %s -c)", rdir, sumcmd)
+      @logger.debug("processing: %s -b %s | ssh %s \"%s\"",
+                    sumcmd, filelist * " ", host, rcmd)
+      return true if dry_run
+      out, status = pipeline_r(
+        [sumcmd, "-b", *filelist],
+        ["ssh", host, rcmd]
+      ) {|so, th| [so.readlines(nil), th.value] }
+      unless status.success?
+        @logger.error("%s -b %s | ssh %s \"%s\": NG, status=%d, out=%s",
+                      sumcmd, filelist * " ", host, rcmd, status, out)
+        return false
+      end
+      return true
+    end
+
+    # リモートのファイルの名前を変える。
+    def rename(host, rdir, sname, dname, dry_run = false)
+      rcmd = sprintf("(cd %s; mv %s %s)", rdir, sname, dname)
+      @logger.debug("processing: ssh %s \"%s\"",
+                    host, rcmd)
+      return true if dry_run
+      out, status = Open3.capture2e("ssh", host, rcmd)
+      unless status.success?
+        @logger.debug("ssh %s \"%s\": NG, status=%d, out=%s",
+                      host, rcmd, status, out)
         return false
       end
       return true
