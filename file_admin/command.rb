@@ -16,6 +16,7 @@
 #
 
 require 'etc'
+require 'open3'
 require 'pathname'
 
 module FileAdmin
@@ -69,14 +70,12 @@ module FileAdmin
       @logger.debug("processing: zip %s %s %s",
                     zip_opt, arcfile, filelist * " ")
       return true if dry_run
-      out = IO.popen("-", "r+") {|io|
-        Process.exec("zip", zip_opt, arcfile, "-@") unless io
-        filelist.each {|file| io.puts(file) }
-        io.close_write
-        io.readlines(nil)
+      out, status = Open3.popen2e("zip", zip_opt, arcfile, "-@") {|si, so, th|
+        filelist.each {|file| si.puts(file) }
+        si.close_write
+        [so.readlines(nil), th.value]
       }
-      status = $?
-      if status != 0
+      unless status.success?
         @logger.error("zip %s %s %s: NG, status=%d, out=%s",
                       zip_opt, arcfile, filelist * " ", status, out)
         return false
