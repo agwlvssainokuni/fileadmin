@@ -18,7 +18,6 @@
 
 require 'optparse'
 require 'time'
-require 'psych'
 require 'yaml'
 require File.join(File.dirname(__FILE__), 'file_admin/yaml_conf')
 
