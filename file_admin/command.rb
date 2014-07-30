@@ -104,9 +104,9 @@ module FileAdmin
       @logger.debug("processing: %s -b %s | ssh %s \"%s\"",
                     sumcmd, filelist * " ", host, rcmd)
       return true if dry_run
-      out, status = pipeline_r( [sumcmd, "-b", *filelist],
-                                ["ssh", host, rcmd] ) {|so, th|
-        [so.readlines(nil), th.value]
+      out, status = Open3.pipeline_r( [sumcmd, "-b", *filelist],
+                                      ["ssh", host, rcmd] ) {|so, th|
+        [so.readlines(nil), [th[0].value, th[1].value]]
       }
       unless status[0].success? && status[1].success?
         @logger.error("%s -b %s | ssh %s \"%s\": NG, status=%d|%d, out=%s",

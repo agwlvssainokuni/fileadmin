@@ -186,9 +186,10 @@ describe FileAdmin::Command do
       @list = ["file1.txt", "file2.txt", "file3.txt.done", "dir/file.txt"]
     end
     before do
-      @list.map{|f| "testdir/src/#{f}"}.each {|file|
-        %x{mkdir -p #{File.dirname(file)}}
-        %x{touch #{file}}
+      @list.each {|file|
+        f = "testdir/src/#{file}"
+        %x{mkdir -p #{File.dirname(f)}}
+        %x{touch #{f}}
       }
       %x{mkdir -p testdir/dest/}
     end
@@ -223,6 +224,46 @@ describe FileAdmin::Command do
           expect(Pathname(f)).not_to exist
         }
       }
+    end
+  end
+
+  describe "checksum" do
+    subject {
+      pwd = Dir::pwd()
+      Dir.chdir("testdir/dest/") {
+        checksum("localhost", "#{pwd}/testdir/src/", @list, "sha1sum")
+      }
+    }
+
+    before(:all) do
+      @list = ["file1.txt", "file2.txt"]
+    end
+    before do
+      @list.each {|file|
+        sf = "testdir/src/#{file}"
+        %x{mkdir -p #{File.dirname(sf)}}
+        %x{echo #{file} > #{sf}}
+        df = "testdir/dest/#{file}"
+        %x{mkdir -p #{File.dirname(df)}}
+        %x{echo #{file} > #{df}}
+      }
+    end
+
+    context "成功 (retval)" do
+      before do
+        @retval = subject
+      end
+      it { expect(@retval).to be_truthy }
+    end
+    context "失敗/権限なし (retval)" do
+      before do
+        @list.each {|file|
+          df = "testdir/dest/#{file}"
+          %x{echo #{file} >> #{df}}
+        }
+        @retval = subject
+      end
+      it { expect(@retval).to be_falsey }
     end
   end
 
