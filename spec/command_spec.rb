@@ -255,7 +255,7 @@ describe FileAdmin::Command do
       end
       it { expect(@retval).to be_truthy }
     end
-    context "失敗/権限なし (retval)" do
+    context "失敗/チェックサム不一致 (retval)" do
       before do
         @list.each {|file|
           df = "testdir/dest/#{file}"
@@ -264,6 +264,36 @@ describe FileAdmin::Command do
         @retval = subject
       end
       it { expect(@retval).to be_falsey }
+    end
+  end
+
+  describe "rename" do
+    subject {
+      rename("localhost", "#{Dir::pwd()}/testdir/", "file.txt", "file.txt.done")
+    }
+    let(:from_file) { Pathname("testdir/file.txt") }
+    let(:to_file) { Pathname("testdir/file.txt.done") }
+
+    before do
+      %x{touch testdir/file.txt}
+    end
+
+    context "成功 (retval, from_file, to_file)" do
+      before do
+        @retval = subject
+      end
+      it { expect(@retval).to be_truthy }
+      it { expect(from_file).not_to exist }
+      it { expect(to_file).to be_file }
+    end
+    context "失敗/権限なし (retval, from_file, to_file)" do
+      before do
+        %x{chmod -w testdir/}
+        @retval = subject
+      end
+      it { expect(@retval).to be_falsey }
+      it { expect(from_file).to be_file }
+      it { expect(to_file).not_to exist }
     end
   end
 
