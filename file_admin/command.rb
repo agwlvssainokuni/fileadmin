@@ -84,15 +84,15 @@ module FileAdmin
     end
 
     # リモートディレクトリからローカルディレクトリに同期 (RSYNC) する。
-    def rsync(host, rdir, ldir, ext, dry_run = false)
-      @logger.debug("processing: rsync -a --exclude=*.%s %s:%s %s",
-                    ext, host, rdir, ldir)
+    def rsync(host, rdir, ldir, pat, dry_run = false)
+      @logger.debug("processing: rsync -a %s:%s %s --include %s --exclude *",
+                    host, rdir, ldir, pat)
       return true if dry_run
-      out, status = Open3.capture2e("rsync", "-a", "--exclude=*.#{ext}",
-                                    "#{host}:#{rdir}", ldir)
+      out, status = Open3.capture2e("rsync", "-a", "#{host}:#{rdir}", ldir,
+                                    "--include", pat, "--exclude", "*")
       unless status.success?
-        @logger.error("rsync -a --exclude=*.%s %s:%s %s: NG, status=%d, out=%s",
-                      ext, host, rdir, ldir, status, out)
+        @logger.error("rsync -a %s:%s %s --include %s --exclude *: NG, status=%d, out=%s",
+                      host, rdir, ldir, pat, status, out)
         return false
       end
       return true

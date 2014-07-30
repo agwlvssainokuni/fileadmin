@@ -179,12 +179,11 @@ describe FileAdmin::Command do
 
   describe "rsync" do
     subject {
-      rsync("localhost", Dir::pwd() + "/testdir/src/", "testdir/dest/", "done")
+      rsync("localhost", "#{Dir::pwd()}/testdir/src/", "testdir/dest/", "file*.txt")
     }
 
     before(:all) do
-      @list = ["dir1/file1.txt", "dir1/file1.done",
-               "dir2/file2.txt", "dir2/file2.done"]
+      @list = ["file1.txt", "file2.txt", "file3.txt.done", "dir/file.txt"]
     end
     before do
       @list.map{|f| "testdir/src/#{f}"}.each {|file|
@@ -200,11 +199,14 @@ describe FileAdmin::Command do
       end
       it { expect(@retval).to be_truthy }
       it {
-        @list.map{|f| "testdir/dest/#{f}"}.each {|file|
+        @list.each {|file|
+          f = "testdir/dest/#{file}"
           if file.end_with?(".done")
-            expect(Pathname(file)).not_to exist
+            expect(Pathname(f)).not_to exist
+          elsif file.start_with?("dir/")
+            expect(Pathname(f)).not_to exist
           else
-            expect(Pathname(file)).to be_file
+            expect(Pathname(f)).to be_file
           end
         }
       }
@@ -216,8 +218,9 @@ describe FileAdmin::Command do
       end
       it { expect(@retval).to be_falsey }
       it {
-        @list.map{|f| "testdir/dest/#{f}"}.each {|file|
-          expect(Pathname(file)).not_to exist
+        @list.each {|file|
+          f = "testdir/dest/#{file}"
+          expect(Pathname(f)).not_to exist
         }
       }
     end
