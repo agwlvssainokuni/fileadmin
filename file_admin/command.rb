@@ -104,19 +104,20 @@ module FileAdmin
       @logger.debug("processing: %s -b %s | ssh %s \"%s\"",
                     sumcmd, filelist * " ", host, rcmd)
       return true if dry_run
-      out, status = pipeline_r(
-        [sumcmd, "-b", *filelist],
-        ["ssh", host, rcmd]
-      ) {|so, th| [so.readlines(nil), th.value] }
+      out, status = pipeline_r( [sumcmd, "-b", *filelist],
+                                ["ssh", host, rcmd] ) {|so, th|
+        [so.readlines(nil), th.value]
+      }
       unless status[0].success? && status[1].success?
         @logger.error("%s -b %s | ssh %s \"%s\": NG, status=%d|%d, out=%s",
-                      sumcmd, filelist * " ", host, rcmd, status[0], status[1], out)
+                      sumcmd, filelist * " ", host, rcmd,
+                      status[0], status[1], out)
         return false
       end
       return true
     end
 
-    # リモートのファイルの名前を変える。
+    # リモートのファイルの名前を変更する。
     def rename(host, rdir, sname, dname, dry_run = false)
       rcmd = sprintf("(cd %s; mv %s %s)", rdir, sname, dname)
       @logger.debug("processing: ssh %s \"%s\"",
