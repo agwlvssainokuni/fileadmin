@@ -29,9 +29,9 @@ module FileAdmin
   #   host
   #   rdir
   #   pattern
-  #   sumcmd (opt)
   #   ext
   #   to_dir
+  #   sumcmd (opt)
   class FetchFile
     include Validation
     include Command
@@ -66,6 +66,11 @@ module FileAdmin
           Dir.glob(pat)
         }
 
+        if filelist.empty?
+          @logger.debug("process ignored")
+          return true
+        end
+
         cmd = if is_empty?(@sumcmd); "sha1sum" else @sumcmd end
         return false unless checksum(@host, @rdir, filelist, cmd, dry_run)
         @logger.notice("%s -b %s | ssh %s \"(cd %s; %s -c)\": OK",
@@ -73,7 +78,7 @@ module FileAdmin
 
         filelist.each {|file|
 
-          to_file = "#{file}.#{ext}"
+          to_file = "#{file}.#{@ext}"
           return false unless rename(@host, @rdir, file, to_file, dry_run)
           @logger.notice("ssh %s \"(cd %s; mv %s %s)\": OK",
                          @host, @rdir, file, to_file) unless dry_run
