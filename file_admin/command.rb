@@ -104,14 +104,15 @@ module FileAdmin
       @logger.debug("processing: %s -b %s | ssh %s \"%s\"",
                     sumcmd, filelist * " ", host, rcmd)
       return true if dry_run
-      err_r, err_w = IO.pipe
-      out, status = Open3.pipeline_r( [sumcmd, "-b", *filelist],
-                                      ["ssh", host, rcmd],
-                                      :err => err_w) {|so, th|
-        [so.readlines(nil), [th[0].value, th[1].value]]
+      out, err, status = IO.pipe {|err_r, err_w|
+        o, s = Open3.pipeline_r( [sumcmd, "-b", *filelist],
+                                 ["ssh", host, rcmd],
+                                 :err => err_w) {|so, th|
+          [so.readlines(nil), [th[0].value, th[1].value]]
+        }
+        err_w.close
+        [o, err_r.readlines(nil), s]
       }
-      err_w.close
-      err = err_r.readlines(nil)
       unless status[0].success? && status[1].success?
         @logger.error("%s -b %s | ssh %s \"%s\": NG, status=%d|%d, out=%s, err=%s",
                       sumcmd, filelist * " ", host, rcmd,
