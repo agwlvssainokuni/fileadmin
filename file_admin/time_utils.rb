@@ -16,6 +16,7 @@
 #
 
 require 'time'
+require 'open3'
 
 module FileAdmin
 
@@ -25,8 +26,9 @@ module FileAdmin
     # 起点時刻から差分時間を変異させた時刻を算出する。
     def calculate_time(time, diff)
       tm = time.strftime("%Y/%m/%d %H:%M:%S")
-      out = %x{date -d "#{tm} #{diff}" +"%Y/%m/%d %H:%M:%S" 2>&1}
-      unless $? == 0
+      out, status = Open3.capture2e("date", "--date", "#{tm} #{diff}",
+                                    "+%Y/%m/%d %H:%M:%S")
+      unless status.success?
         raise ArgumentError, out
       end
       return Time.parse(out)
