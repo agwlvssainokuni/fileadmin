@@ -217,6 +217,9 @@ describe FileAdmin::Command do
         %x{chmod a-wx testdir/dest/}
         @retval = subject
       end
+      after do
+        %x{chmod a+x testdir/dest/}
+      end
       it { expect(@retval).to be_falsey }
       it {
         @list.each {|file|
