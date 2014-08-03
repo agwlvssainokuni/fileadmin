@@ -15,7 +15,7 @@
 #  limitations under the License.
 #
 
-require 'yaml'
+require File.join(File.dirname(__FILE__), 'helper')
 require File.join(File.dirname(__FILE__), '../file_admin/aggregate_archive')
 
 FileAdmin::Logger.console_enabled = false
@@ -24,7 +24,7 @@ FileAdmin::Logger.syslog_enabled = false
 
 describe FileAdmin::AggregateArchive do
 
-  subject { YAML.object_maker(FileAdmin::AggregateArchive, conf) }
+  subject { object_maker(FileAdmin::AggregateArchive, conf) }
 
   let(:base_conf) { {
       "label" => "複合アーカイブ試験",

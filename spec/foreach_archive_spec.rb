@@ -15,7 +15,7 @@
 #  limitations under the License.
 #
 
-require 'yaml'
+require File.join(File.dirname(__FILE__), 'helper')
 require File.join(File.dirname(__FILE__), '../file_admin/foreach_archive')
 
 FileAdmin::Logger.console_enabled = false
@@ -24,7 +24,7 @@ FileAdmin::Logger.syslog_enabled = false
 
 describe FileAdmin::ForeachArchive do
 
-  subject { YAML.object_maker(FileAdmin::ForeachArchive, conf) }
+  subject { object_maker(FileAdmin::ForeachArchive, conf) }
 
   let(:base_conf) { {
       "label" => "一対一アーカイブ試験",

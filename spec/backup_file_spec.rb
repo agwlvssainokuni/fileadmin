@@ -15,7 +15,7 @@
 #  limitations under the License.
 #
 
-require 'yaml'
+require File.join(File.dirname(__FILE__), 'helper')
 require File.join(File.dirname(__FILE__), '../file_admin/backup_file')
 
 FileAdmin::Logger.console_enabled = false
@@ -24,7 +24,7 @@ FileAdmin::Logger.syslog_enabled = false
 
 describe FileAdmin::BackupFile do
 
-  subject { YAML.object_maker(FileAdmin::BackupFile, conf) }
+  subject { object_maker(FileAdmin::BackupFile, conf) }
 
   let(:base_conf) { {
       "label" => "ファイル退避試験",

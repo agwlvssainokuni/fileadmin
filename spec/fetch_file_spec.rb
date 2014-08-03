@@ -15,7 +15,7 @@
 #  limitations under the License.
 #
 
-require 'yaml'
+require File.join(File.dirname(__FILE__), 'helper')
 require File.join(File.dirname(__FILE__), '../file_admin/fetch_file')
 
 FileAdmin::Logger.console_enabled = false
@@ -24,7 +24,7 @@ FileAdmin::Logger.syslog_enabled = false
 
 describe FileAdmin::FetchFile do
 
-  subject { YAML.object_maker(FileAdmin::FetchFile, conf) }
+  subject { object_maker(FileAdmin::FetchFile, conf) }
 
   let(:base_conf) { {
       "label" => "リモート退避試験",
