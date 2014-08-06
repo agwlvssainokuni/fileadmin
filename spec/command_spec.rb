@@ -230,6 +230,59 @@ describe FileAdmin::Command do
     end
   end
 
+  describe "rsync_to_push" do
+    subject {
+      rsync_to_push("testdir/src/", "localhost", "#{Dir::pwd()}/testdir/dest/", "file*.txt")
+    }
+
+    before(:all) do
+      @list = ["file1.txt", "file2.txt", "file3.txt.done", "dir/file.txt"]
+    end
+    before do
+      @list.each {|file|
+        f = "testdir/src/#{file}"
+        %x{mkdir -p #{File.dirname(f)}}
+        %x{touch #{f}}
+      }
+      %x{mkdir -p testdir/dest/}
+    end
+
+    context "成功 (retval, to be file)" do
+      before do
+        @retval = subject
+      end
+      it { expect(@retval).to be_truthy }
+      it {
+        @list.each {|file|
+          f = "testdir/dest/#{file}"
+          if file.end_with?(".done")
+            expect(Pathname(f)).not_to exist
+          elsif file.start_with?("dir/")
+            expect(Pathname(f)).not_to exist
+          else
+            expect(Pathname(f)).to be_file
+          end
+        }
+      }
+    end
+    context "失敗/権限なし (retval, not to be file)" do
+      before do
+        %x{chmod a-wx testdir/dest/}
+        @retval = subject
+      end
+      after do
+        %x{chmod a+x testdir/dest/}
+      end
+      it { expect(@retval).to be_falsey }
+      it {
+        @list.each {|file|
+          f = "testdir/dest/#{file}"
+          expect(Pathname(f)).not_to exist
+        }
+      }
+    end
+  end
+
   describe "checksum" do
     subject {
       pwd = Dir::pwd()
