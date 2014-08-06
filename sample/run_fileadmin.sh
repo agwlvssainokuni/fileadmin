@@ -73,6 +73,15 @@ cat <<__CONFIG__
   suffix: .zip
   tsformat: "%Y%m%d"
   grace_period: "4 days ago"
+
+- !ruby/object:PUSH
+  label: ファイル配信テスト
+  basedir: ${basedir}/3back/
+  host: localhost
+  rdir: ${basedir}/4dest/
+  pattern:
+    - foreach_*.zip
+    - aggregate_*.zip
 __CONFIG__
 
 )
