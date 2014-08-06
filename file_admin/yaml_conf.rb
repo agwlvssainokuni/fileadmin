@@ -27,3 +27,4 @@ AGGREGATE = FileAdmin::AggregateArchive
 BACKUP = FileAdmin::BackupFile
 CLEANUP = FileAdmin::CleanupFile
 FETCH = FileAdmin::FetchFile
+PUSH = FileAdmin::PushFile
