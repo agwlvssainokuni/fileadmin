@@ -21,6 +21,7 @@ require File.join(File.dirname(__FILE__), 'aggregate_archive')
 require File.join(File.dirname(__FILE__), 'backup_file')
 require File.join(File.dirname(__FILE__), 'cleanup_file')
 require File.join(File.dirname(__FILE__), 'fetch_file')
+require File.join(File.dirname(__FILE__), 'push_file')
 
 FOREACH = FileAdmin::ForeachArchive
 AGGREGATE = FileAdmin::AggregateArchive
