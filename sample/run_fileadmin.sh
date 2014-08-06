@@ -2,7 +2,7 @@
 
 basedir=$(cd $(dirname ${BASH_SOURCE[0]}) && pwd)
 
-ruby -I ${basedir}/.. ${basedir}/../fileadmin.rb $* <(
+${basedir}/../fileadmin.rb $* <(
 
 cat <<__CONFIG__
 - !ruby/object:FOREACH

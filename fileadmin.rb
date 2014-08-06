@@ -1,4 +1,4 @@
-#!/usr/bin/ruby
+#!/usr/bin/env ruby
 # -*- coding: utf-8 -*-
 #
 #  Copyright 2012,2014 agwlvssainokuni
