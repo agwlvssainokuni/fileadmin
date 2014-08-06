@@ -84,7 +84,7 @@ module FileAdmin
     end
 
     # リモートディレクトリからローカルディレクトリに同期 (RSYNC) する。
-    def rsync(host, rdir, ldir, pat, dry_run = false)
+    def rsync_to_fetch(host, rdir, ldir, pat, dry_run = false)
       @logger.debug("processing: rsync -a %s:%s %s --include %s --exclude *",
                     host, rdir, ldir, pat)
       return true if dry_run

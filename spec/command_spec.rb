@@ -177,9 +177,9 @@ describe FileAdmin::Command do
     end
   end
 
-  describe "rsync" do
+  describe "rsync_to_fetch" do
     subject {
-      rsync("localhost", "#{Dir::pwd()}/testdir/src/", "testdir/dest/", "file*.txt")
+      rsync_to_fetch("localhost", "#{Dir::pwd()}/testdir/src/", "testdir/dest/", "file*.txt")
     }
 
     before(:all) do
