@@ -85,14 +85,33 @@ module FileAdmin
 
     # リモートディレクトリからローカルディレクトリに同期 (RSYNC) する。
     def rsync_to_fetch(host, rdir, ldir, pat, dry_run = false)
-      @logger.debug("processing: rsync -a %s:%s %s --include %s --exclude *",
-                    host, rdir, ldir, pat)
+      args = Array(pat).flat_map {|p| ["--include", p]}
+      args << "--exclude" << "*" unless pat.nil? || pat.empty?
+      @logger.debug("processing: rsync -a %s:%s %s %s",
+                    host, rdir, ldir, args * " ")
       return true if dry_run
-      out, status = Open3.capture2e("rsync", "-a", "#{host}:#{rdir}", ldir,
-                                    "--include", pat, "--exclude", "*")
+      out, status = Open3.capture2e("rsync", "-a",
+                                    "#{host}:#{rdir}", ldir, *args)
       unless status.success?
-        @logger.error("rsync -a %s:%s %s --include %s --exclude *: NG, status=%d, out=%s",
-                      host, rdir, ldir, pat, status, out)
+        @logger.error("rsync -a %s:%s %s %s: NG, status=%d, out=%s",
+                      host, rdir, ldir, args * " ", status, out)
+        return false
+      end
+      return true
+    end
+
+    # リモートディレクトリからローカルディレクトリに同期 (RSYNC) する。
+    def rsync_to_push(ldir, host, rdir, pat, dry_run = false)
+      args = Array(pat).flat_map {|p| ["--include", p]}
+      args << "--exclude" << "*" unless pat.nil? || pat.empty?
+      @logger.debug("processing: rsync -a --delete %s %s:%s %s",
+                    ldir, host, rdir, args * " ")
+      return true if dry_run
+      out, status = Open3.capture2e("rsync", "-a", "--delete",
+                                    ldir, "#{host}:#{rdir}", *args)
+      unless status.success?
+        @logger.error("rsync -a --delete %s %s:%s %s: NG, status=%d, out=%s",
+                      ldir, host, rdir, args * " ", status, out)
         return false
       end
       return true
