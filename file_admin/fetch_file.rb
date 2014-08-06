@@ -59,10 +59,12 @@ module FileAdmin
 
       Dir.chdir(@basedir) {
 
+        src = "#{@host}:#{@rdir}"
+        dest = "."
         filelist = Array(@pattern).flat_map {|pat|
-          return false unless rsync_to_fetch(@host, @rdir, ".", pat, dry_run)
-          @logger.notice("rsync -a %s:%s %s --include %s --exclude *: OK",
-                         @host, @rdir, ".", pat) unless dry_run
+          return false unless rsync(src, dest, pat, [], dry_run)
+          @logger.notice("rsync -a %s %s --include %s --exclude *: OK",
+                         src, dest, pat) unless dry_run
           Dir.glob(pat)
         }
 

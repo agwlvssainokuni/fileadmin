@@ -53,11 +53,15 @@ module FileAdmin
       @logger.debug("start")
 
       Dir.chdir(@basedir) {
-        return false unless rsync_to_push(".", @host, @rdir, @pattern, dry_run)
+        src = "."
+        dest = "#{@host}:#{@rdir}"
+        option = ["--delete"]
+        return false unless rsync(src, dest, @pattern, option, dry_run)
         args = Array(@pattern).flat_map {|p| ["--include", p]}
         args << "--exclude" << "*" unless @pattern.nil? || @pattern.empty?
-        @logger.notice("rsync -a --delete %s %s:%s %s: OK",
-                       ".", @host, @rdir, args * " ") unless dry_run
+        args += option
+        @logger.notice("rsync -a %s %s %s: OK",
+                       src, dest, args * " ") unless dry_run
       }
 
       @logger.debug("end normally")

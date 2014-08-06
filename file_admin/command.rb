@@ -83,35 +83,18 @@ module FileAdmin
       return true
     end
 
-    # リモートディレクトリからローカルディレクトリに同期 (RSYNC) する。
-    def rsync_to_fetch(host, rdir, ldir, pat, dry_run = false)
-      args = Array(pat).flat_map {|p| ["--include", p]}
-      args << "--exclude" << "*" unless pat.nil? || pat.empty?
-      @logger.debug("processing: rsync -a %s:%s %s %s",
-                    host, rdir, ldir, args * " ")
+    # ディレクトリを同期 (RSYNC) する
+    def rsync(src, dest, pattern, option, dry_run = false)
+      args = Array(pattern).flat_map {|p| ["--include", p]}
+      args << "--exclude" << "*" unless pattern.nil? || pattern.empty?
+      args += Array(option)
+      @logger.debug("processing: rsync -a %s %s %s",
+                    src, dest, args * " ")
       return true if dry_run
-      out, status = Open3.capture2e("rsync", "-a",
-                                    "#{host}:#{rdir}", ldir, *args)
+      out, status = Open3.capture2e("rsync", "-a", src, dest, *args)
       unless status.success?
-        @logger.error("rsync -a %s:%s %s %s: NG, status=%d, out=%s",
-                      host, rdir, ldir, args * " ", status, out)
-        return false
-      end
-      return true
-    end
-
-    # リモートディレクトリからローカルディレクトリに同期 (RSYNC) する。
-    def rsync_to_push(ldir, host, rdir, pat, dry_run = false)
-      args = Array(pat).flat_map {|p| ["--include", p]}
-      args << "--exclude" << "*" unless pat.nil? || pat.empty?
-      @logger.debug("processing: rsync -a --delete %s %s:%s %s",
-                    ldir, host, rdir, args * " ")
-      return true if dry_run
-      out, status = Open3.capture2e("rsync", "-a", "--delete",
-                                    ldir, "#{host}:#{rdir}", *args)
-      unless status.success?
-        @logger.error("rsync -a --delete %s %s:%s %s: NG, status=%d, out=%s",
-                      ldir, host, rdir, args * " ", status, out)
+        @logger.error("rsync -a %s %s %s: NG, status=%d, out=%s",
+                      src, dest, args * " ", status, out)
         return false
       end
       return true

@@ -179,7 +179,7 @@ describe FileAdmin::Command do
 
   describe "rsync_to_fetch" do
     subject {
-      rsync_to_fetch("localhost", "#{Dir::pwd()}/testdir/src/", "testdir/dest/", "file*.txt")
+      rsync("localhost:#{Dir::pwd()}/testdir/src/", "testdir/dest/", "file*.txt", [])
     }
 
     before(:all) do
@@ -232,7 +232,7 @@ describe FileAdmin::Command do
 
   describe "rsync_to_push" do
     subject {
-      rsync_to_push("testdir/src/", "localhost", "#{Dir::pwd()}/testdir/dest/", "file*.txt")
+      rsync("testdir/src/", "localhost:#{Dir::pwd()}/testdir/dest/", "file*.txt", ["--delete"])
     }
 
     before(:all) do
