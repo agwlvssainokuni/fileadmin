@@ -49,7 +49,7 @@ module FileAdmin
     # 日時文字列書式形式チェック
     def check_format_strftime(name, value)
       return true if is_empty?(value)
-      return true if value =~ /^%Y(%m(%d(%H(%M(%S)?)?)?)?)?$/
+      return true if value =~ /^%Y(-?%m(-?%d(-?%H(-?%M(-?%S)?)?)?)?)?$/
       @logger.error("'%s' must be strftime format: %s", name, value)
       return false
     end

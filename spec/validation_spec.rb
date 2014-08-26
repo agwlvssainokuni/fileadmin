@@ -109,6 +109,33 @@ check_required_string(@name, value)
       end
     end
 
+    context "年月日時分秒(%Y-%m-%d-%H-%M-%S)の並び" do
+      context "%Y" do
+        let(:value) { "%Y" }
+        it { is_expected.to be_truthy }
+      end
+      context "%Y-%m" do
+        let(:value) { "%Y-%m" }
+        it { is_expected.to be_truthy }
+      end
+      context "%Y-%m-%d" do
+        let(:value) { "%Y-%m-%d" }
+        it { is_expected.to be_truthy }
+      end
+      context "%Y-%m-%d-%H" do
+        let(:value) { "%Y-%m-%d-%H" }
+        it { is_expected.to be_truthy }
+      end
+      context "%Y-%m-%d-%H-%M" do
+        let(:value) { "%Y-%m-%d-%H-%M" }
+        it { is_expected.to be_truthy }
+      end
+      context "%Y-%m-%d-%H-%M-%S" do
+        let(:value) { "%Y-%m-%d-%H-%M-%S" }
+        it { is_expected.to be_truthy }
+      end
+    end
+
     context "nil" do
       let(:value) { nil }
       it { is_expected.to be_truthy }
