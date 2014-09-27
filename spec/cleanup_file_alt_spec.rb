@@ -16,26 +16,23 @@
 #
 
 require File.join(File.dirname(__FILE__), 'helper')
-require File.join(File.dirname(__FILE__), '../file_admin/backup_file')
+require File.join(File.dirname(__FILE__), '../file_admin/cleanup_file_alt')
 
 FileAdmin::Logger.console_enabled = false
 FileAdmin::Logger.syslog_enabled = false
 
 
-describe FileAdmin::BackupFile do
+describe FileAdmin::CleanupFileAlt do
 
-  subject { object_maker(FileAdmin::BackupFile, conf) }
+  subject { object_maker(FileAdmin::CleanupFileAlt, conf) }
 
   let(:base_conf) { {
-      "label" => "ファイル退避試験",
+      "label" => "ファイル削除(バリエーション)試験",
       "basedir" => "#{Dir.pwd}/testdir/src",
-      "pattern" => [ "dir1/file1_", "dir2/file2_" ],
+      "pattern" => [ "dir1/file1_*.txt", "dir2/file2_*.txt" ],
       "regexp" => "file[12]_(\\d{8})\\.txt$",
       "cond" => "$1 > '00000000'",
-      "suffix" => ".txt",
-      "tsformat" => "%Y%m%d",
-      "grace_period" => "2 days ago",
-      "to_dir" => "#{Dir.pwd}/testdir/dest"
+      "exclude" => 3
     } }
 
 
@@ -47,7 +44,7 @@ describe FileAdmin::BackupFile do
     end
 
     context "全指定 (patternは文字列)" do
-      let(:conf) { base_conf.merge("pattern" => "dir1/file_") }
+      let(:conf) { base_conf.merge("pattern" => "dir1/file_*.txt") }
       it { expect(subject).to be_valid }
     end
 
@@ -86,34 +83,9 @@ describe FileAdmin::BackupFile do
       it { expect(subject).to be_valid }
     end
 
-    context "suffixなし" do
-      let(:conf) { base_conf.merge("suffix" => nil) }
+    context "excludeなし" do
+      let(:conf) { base_conf.merge("exclude" => nil) }
       it { expect(subject).to be_valid }
-    end
-
-    context "tsformatなし" do
-      let(:conf) { base_conf.merge("tsformat" => nil) }
-      it { expect(subject).not_to be_valid }
-    end
-
-    context "tsformat形式不正" do
-      let(:conf) { base_conf.merge("tsformat" => "invalid") }
-      it { expect(subject).not_to be_valid }
-    end
-
-    context "grace_periodなし" do
-      let(:conf) { base_conf.merge("grace_period" => nil) }
-      it { expect(subject).not_to be_valid }
-    end
-
-    context "grace_period形式不正" do
-      let(:conf) { base_conf.merge("grace_period" => "invalid") }
-      it { expect(subject).not_to be_valid }
-    end
-
-    context "to_dirなし" do
-      let(:conf) { base_conf.merge("to_dir" => nil) }
-      it { expect(subject).not_to be_valid }
     end
   end
 
@@ -132,7 +104,6 @@ describe FileAdmin::BackupFile do
 
     before(:each) do
       %x{mkdir -p testdir/src}
-      %x{mkdir -p testdir/dest}
       file_list.each {|f|
         %x{mkdir -p testdir/src/#{File.dirname(f)}}
         %x{touch testdir/src/#{f}}
@@ -146,11 +117,11 @@ describe FileAdmin::BackupFile do
 
     describe "正常系" do
 
-      shared_examples_for "退避して正常終了" do
+      shared_examples_for "削除して正常終了" do
         before do
           @retval = subject.process(time, dry_run)
         end
-        context "通常 (retval,src(proc,not),dest(proc,not))" do
+        context "通常 (retval,src(proc,not))" do
           let(:dry_run) { false }
           it { expect(@retval).to be_truthy }
           it {
@@ -163,18 +134,6 @@ describe FileAdmin::BackupFile do
               expect(Pathname("testdir/src/#{f}")).to be_file
             }
           }
-          it {
-            files_in_process.each {|f|
-              bname = File.basename(f)
-              expect(Pathname("testdir/dest/#{bname}")).to be_file
-            }
-          }
-          it {
-            files_not_in_process.each {|f|
-              bname = File.basename(f)
-              expect(Pathname("testdir/dest/#{bname}")).not_to exist
-            }
-          }
         end
         context "ドライ (retval,src,dest)" do
           let(:dry_run) { true }
@@ -184,17 +143,11 @@ describe FileAdmin::BackupFile do
               expect(Pathname("testdir/src/#{f}")).to be_file
             }
           }
-          it {
-            file_list.each {|f|
-              bname = File.basename(f)
-              expect(Pathname("testdir/dest/#{bname}")).not_to exist
-            }
-          }
         end
       end
 
       describe "絞込みなし" do
-        it_behaves_like "退避して正常終了"
+        it_behaves_like "削除して正常終了"
         let(:files_in_process) {
           file_list_1[3..-1] + file_list_2[3..-1]
         }
@@ -202,15 +155,15 @@ describe FileAdmin::BackupFile do
       end
 
       describe "patternで絞込み" do
-        it_behaves_like "退避して正常終了"
+        it_behaves_like "削除して正常終了"
         let(:files_in_process) {
           file_list_1[3..-1]
         }
-        let(:conf) { base_conf.merge("pattern" => "dir1/file1_") }
+        let(:conf) { base_conf.merge("pattern" => "dir1/file1_*.txt") }
       end
 
       describe "regexpで絞込み" do
-        it_behaves_like "退避して正常終了"
+        it_behaves_like "削除して正常終了"
         let(:files_in_process) {
           file_list_1[3..-1]
         }
@@ -219,16 +172,8 @@ describe FileAdmin::BackupFile do
         }
       end
 
-      describe "絞込みなし" do
-        it_behaves_like "退避して正常終了"
-        let(:files_in_process) {
-          file_list_1[3..-1] + file_list_2[3..-1]
-        }
-        let(:conf) { base_conf }
-      end
-
       describe "condで絞込み" do
-        it_behaves_like "退避して正常終了"
+        it_behaves_like "削除して正常終了"
         let(:files_in_process) {
           file_list_1[3..-2] + file_list_2[3..-2]
         }
@@ -242,11 +187,11 @@ describe FileAdmin::BackupFile do
 
     describe "境界系" do
 
-      shared_examples_for "退避しないで正常終了" do
+      shared_examples_for "削除しないで正常終了" do
         before do
           @retval = subject.process(time, dry_run)
         end
-        context "通常 (retval,src,dest)" do
+        context "通常 (retval,src)" do
           let(:dry_run) { false }
           it { expect(@retval).to be_truthy }
           it {
@@ -254,14 +199,8 @@ describe FileAdmin::BackupFile do
               expect(Pathname("testdir/src/#{f}")).to be_file
             }
           }
-          it {
-            file_list.each {|f|
-              bname = File.basename(f)
-              expect(Pathname("testdir/dest/#{bname}")).not_to exist
-            }
-          }
         end
-        context "ドライ (retval,src,dest)" do
+        context "ドライ (retval,src)" do
           let(:dry_run) { true }
           it { expect(@retval).to be_truthy }
           it {
@@ -269,17 +208,11 @@ describe FileAdmin::BackupFile do
               expect(Pathname("testdir/src/#{f}")).to be_file
             }
           }
-          it {
-            file_list.each {|f|
-              bname = File.basename(f)
-              expect(Pathname("testdir/dest/#{bname}")).not_to exist
-            }
-          }
         end
       end
 
       describe "pattern絞込みでディレクトリのみ" do
-        it_behaves_like "退避しないで正常終了"
+        it_behaves_like "削除しないで正常終了"
         let(:conf) {
           base_conf.merge("pattern" => [ "dir1", "dir2" ],
                           "cond" => nil, "regexp" => nil,
@@ -288,30 +221,30 @@ describe FileAdmin::BackupFile do
       end
 
       describe "pattern絞込みで0件" do
-        it_behaves_like "退避しないで正常終了"
+        it_behaves_like "削除しないで正常終了"
         let(:conf) {
-          base_conf.merge("pattern" => ["dir1/file2_", "dir2/file1_"])
+          base_conf.merge("pattern" => ["dir1/file2_*.txt", "dir2/file1_*.txt"])
         }
       end
 
       describe "regexp絞込みで0件" do
-        it_behaves_like "退避しないで正常終了"
+        it_behaves_like "削除しないで正常終了"
         let(:conf) {
           base_conf.merge("regexp" => "file[34]_(\\d{8})\\.txt$")
         }
       end
 
       describe "cond絞込みで0件" do
-        it_behaves_like "退避しないで正常終了"
+        it_behaves_like "削除しないで正常終了"
         let(:conf) {
           base_conf.merge("cond" => "$1 > '9'")
         }
       end
 
-      describe "grace_periodが0" do
-        it_behaves_like "退避しないで正常終了"
+      describe "exclude絞込みで0件" do
+        it_behaves_like "削除しないで正常終了"
         let(:conf) {
-          base_conf.merge("grace_period" => "0 days ago")
+          base_conf.merge("exclude" => 1000)
         }
       end
     end
@@ -325,7 +258,7 @@ describe FileAdmin::BackupFile do
           @retval = subject.process(time, dry_run)
         end
 
-        context "通常 (retval,src,dest)" do
+        context "通常 (retval,src)" do
           let(:dry_run) { false }
           it { expect(@retval).to be_falsey }
           it {
@@ -333,26 +266,14 @@ describe FileAdmin::BackupFile do
               expect(Pathname("testdir/src/#{f}")).to be_file
             }
           }
-          it {
-            file_list.each {|f|
-              bname = File.basename(f)
-              expect(Pathname("testdir/dest/#{bname}")).not_to exist
-            }
-          }
         end
-        context "ドライ (retval,src,dest); dryでもchdirする" do
+        context "ドライ (retval,src); dryでもchdirする" do
           let(:dry_run) { true }
           # dry_runでもchdirするのでfalse
           it { expect(@retval).to be_falsey }
           it {
             file_list.each {|f|
               expect(Pathname("testdir/src/#{f}")).to be_file
-            }
-          }
-          it {
-            file_list.each {|f|
-              bname = File.basename(f)
-              expect(Pathname("testdir/dest/#{bname}")).not_to exist
             }
           }
         end
@@ -366,7 +287,7 @@ describe FileAdmin::BackupFile do
           @retval = subject.process(time, dry_run)
         end
 
-        context "通常 (retval,src,dest)" do
+        context "通常 (retval,src)" do
           let(:dry_run) { false }
           it { expect(@retval).to be_falsey }
           it {
@@ -374,25 +295,13 @@ describe FileAdmin::BackupFile do
               expect(Pathname("testdir/src/#{f}")).to be_file
             }
           }
-          it {
-            file_list.each {|f|
-              bname = File.basename(f)
-              expect(Pathname("testdir/dest/#{bname}")).not_to exist
-            }
-          }
         end
-        context "ドライ (retval,src,dest)" do
+        context "ドライ (retval,src)" do
           let(:dry_run) { true }
           it { expect(@retval).to be_truthy }
           it {
             file_list.each {|f|
               expect(Pathname("testdir/src/#{f}")).to be_file
-            }
-          }
-          it {
-            file_list.each {|f|
-              bname = File.basename(f)
-              expect(Pathname("testdir/dest/#{bname}")).not_to exist
             }
           }
         end

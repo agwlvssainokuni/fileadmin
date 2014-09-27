@@ -16,25 +16,23 @@
 #
 
 require File.join(File.dirname(__FILE__), 'helper')
-require File.join(File.dirname(__FILE__), '../file_admin/backup_file')
+require File.join(File.dirname(__FILE__), '../file_admin/backup_file_alt')
 
 FileAdmin::Logger.console_enabled = false
 FileAdmin::Logger.syslog_enabled = false
 
 
-describe FileAdmin::BackupFile do
+describe FileAdmin::BackupFileAlt do
 
-  subject { object_maker(FileAdmin::BackupFile, conf) }
+  subject { object_maker(FileAdmin::BackupFileAlt, conf) }
 
   let(:base_conf) { {
-      "label" => "ファイル退避試験",
+      "label" => "ファイル退避(バリエーション)試験",
       "basedir" => "#{Dir.pwd}/testdir/src",
-      "pattern" => [ "dir1/file1_", "dir2/file2_" ],
+      "pattern" => [ "dir1/file1_*.txt", "dir2/file2_*.txt" ],
       "regexp" => "file[12]_(\\d{8})\\.txt$",
       "cond" => "$1 > '00000000'",
-      "suffix" => ".txt",
-      "tsformat" => "%Y%m%d",
-      "grace_period" => "2 days ago",
+      "exclude" => 3,
       "to_dir" => "#{Dir.pwd}/testdir/dest"
     } }
 
@@ -47,7 +45,7 @@ describe FileAdmin::BackupFile do
     end
 
     context "全指定 (patternは文字列)" do
-      let(:conf) { base_conf.merge("pattern" => "dir1/file_") }
+      let(:conf) { base_conf.merge("pattern" => "dir1/file_*.txt") }
       it { expect(subject).to be_valid }
     end
 
@@ -86,29 +84,9 @@ describe FileAdmin::BackupFile do
       it { expect(subject).to be_valid }
     end
 
-    context "suffixなし" do
-      let(:conf) { base_conf.merge("suffix" => nil) }
+    context "excludeなし" do
+      let(:conf) { base_conf.merge("exclude" => nil) }
       it { expect(subject).to be_valid }
-    end
-
-    context "tsformatなし" do
-      let(:conf) { base_conf.merge("tsformat" => nil) }
-      it { expect(subject).not_to be_valid }
-    end
-
-    context "tsformat形式不正" do
-      let(:conf) { base_conf.merge("tsformat" => "invalid") }
-      it { expect(subject).not_to be_valid }
-    end
-
-    context "grace_periodなし" do
-      let(:conf) { base_conf.merge("grace_period" => nil) }
-      it { expect(subject).not_to be_valid }
-    end
-
-    context "grace_period形式不正" do
-      let(:conf) { base_conf.merge("grace_period" => "invalid") }
-      it { expect(subject).not_to be_valid }
     end
 
     context "to_dirなし" do
@@ -206,7 +184,7 @@ describe FileAdmin::BackupFile do
         let(:files_in_process) {
           file_list_1[3..-1]
         }
-        let(:conf) { base_conf.merge("pattern" => "dir1/file1_") }
+        let(:conf) { base_conf.merge("pattern" => "dir1/file1_*.txt") }
       end
 
       describe "regexpで絞込み" do
@@ -217,14 +195,6 @@ describe FileAdmin::BackupFile do
         let(:conf) {
           base_conf.merge("regexp" => "file1_(\\d{8})\\.txt$")
         }
-      end
-
-      describe "絞込みなし" do
-        it_behaves_like "退避して正常終了"
-        let(:files_in_process) {
-          file_list_1[3..-1] + file_list_2[3..-1]
-        }
-        let(:conf) { base_conf }
       end
 
       describe "condで絞込み" do
@@ -290,7 +260,7 @@ describe FileAdmin::BackupFile do
       describe "pattern絞込みで0件" do
         it_behaves_like "退避しないで正常終了"
         let(:conf) {
-          base_conf.merge("pattern" => ["dir1/file2_", "dir2/file1_"])
+          base_conf.merge("pattern" => ["dir1/file2_*.txt", "dir2/file1_*.txt"])
         }
       end
 
@@ -308,10 +278,10 @@ describe FileAdmin::BackupFile do
         }
       end
 
-      describe "grace_periodが0" do
+      describe "exclude絞込みで0件" do
         it_behaves_like "退避しないで正常終了"
         let(:conf) {
-          base_conf.merge("grace_period" => "0 days ago")
+          base_conf.merge("exclude" => 1000)
         }
       end
     end
