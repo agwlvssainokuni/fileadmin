@@ -19,7 +19,6 @@ require File.join(File.dirname(__FILE__), 'logger')
 require File.join(File.dirname(__FILE__), 'validation')
 require File.join(File.dirname(__FILE__), 'command')
 require File.join(File.dirname(__FILE__), 'selector')
-require File.join(File.dirname(__FILE__), 'time_utils')
 
 module FileAdmin
 
