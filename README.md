@@ -11,12 +11,14 @@ fileadmin.rb [options] 設定ファイル...
     --[no-]console     コンソール出力フラグ (省略時: コンソール出力しない)
 ```
 
+
 # 設定ファイル
 ## 集約アーカイブ作成機能
 ### 型指定: `!ruby/object:AGGREGATE`
 
+
 ### 機能概要
-*	指定されたディレクトリ (basedir) 配下でパターンに合致するファイルをまとめて、一つのZIPファイルにアーカイブする。
+*	指定されたディレクトリ (basedir) 配下でパターン (pattern, regexp, cond) に合致するファイルのうち、直近のもの (exclude個) を除外したものを、まとめて一つのZIPファイルにアーカイブする。
 *	アーカイブすると、元のファイルは削除される。
 
 ### パラメタ
@@ -33,11 +35,12 @@ fileadmin.rb [options] 設定ファイル...
 |to_dir  |省略可| アーカイブファイルの作成先ディレクトリを指定する。省略すると basedir に作成される。
 |chown   |省略可| アーカイブファイルを作成した後で `chown` する場合に指定する。省略すると `chown` しない。
 
+
 ## 一対一アーカイブ作成機能
 ### 型指定: `!ruby/object:FOREACH`
 
 ### 機能概要
-*	指定されたディレクトリ (basedir) 配下でパターンに合致するファイルを、一つずつ別々のZIPファイルにアーカイブする。
+*	指定されたディレクトリ (basedir) 配下でパターン (pattern, regexp, cond) に合致するファイルのうち、直近のもの (exclude個) を除外したものを、一つずつ別々のZIPファイルにアーカイブする。
 *	アーカイブすると、元のファイルは削除される。
 
 ### パラメタ
@@ -52,4 +55,103 @@ fileadmin.rb [options] 設定ファイル...
 |suffix  |省略可| アーカイブファイルの名前を形成する際に、元のファイル名から除外する「拡張子」の部分を指定する。
 |to_dir  |省略可| アーカイブファイルの作成先ディレクトリを指定する。省略すると basedir に作成される。
 |chown   |省略可| アーカイブファイルを作成した後で `chown` する場合に指定する。省略すると `chown` しない。
+
+
+## ファイル退避機能
+### 型指定: `!ruby/object:BACKUP`
+
+### 機能概要
+*	指定されたディレクトリ (basedir) 配下でパターン (pattern, regexp, cond) に合致するファイルのうち、所定の期間 (grace_period) 以降のタイムスタンプを持つものを、宛先ディレクトリ (to_dir) に移動する。
+
+### パラメタ
+  #   label
+  #   basedir
+  #   pattern
+  #   regexp (opt)
+  #   cond (opt)
+  #   suffix (opt)
+  #   tsformat
+  #   grace_period
+  #   to_dir
+
+
+## ファイル退避機能(改)
+### 型指定: `!ruby/object:BACKUPALT`
+
+### 機能概要
+*	指定されたディレクトリ (basedir) 配下でパターン (pattern, regexp, cond) に合致するファイルのうち、直近のもの (exclude個) を除外したものを、宛先ディレクトリ (to_dir) に移動する。
+
+### パラメタ
+  #   label
+  #   basedir
+  #   pattern
+  #   regexp (opt)
+  #   cond (opt)
+  #   exclude (opt)
+  #   to_dir
+
+
+## ファイル削除機能
+### 型指定: `!ruby/object:CLEANUP`
+
+### 機能概要
+*	指定されたディレクトリ (basedir) 配下でパターンに合致するファイルのうち、所定の期間 (grace_period) 以降のタイムスタンプを持つものを削除する。
+
+### パラメタ
+  #   label
+  #   basedir
+  #   pattern
+  #   regexp (opt)
+  #   cond (opt)
+  #   suffix (opt)
+  #   tsformat
+  #   grace_period
+
+
+## ファイル削除機能(改)
+### 型指定: `!ruby/object:CLEANUPALT`
+
+### 機能概要
+*	指定されたディレクトリ (basedir) 配下でパターン (pattern, regexp, cond) に合致するファイルのうち、直近のもの (exclude個) を除外したものを、宛先ディレクトリ (to_dir) に移動する。
+
+### パラメタ
+  #   label
+  #   basedir
+  #   pattern
+  #   regexp (opt)
+  #   cond (opt)
+  #   exclude (opt)
+
+
+## リモート退避機能
+### 型指定: `!ruby/object:FETCH`
+
+### 機能概要
+*	リモートディレクトリ (host, rdir) 配下のパターン (pattern) に合致するファイルを、ローカルディレクトリ (basedir) に複製 (`rsync`) する。
+*	複製した個々のファイルについて、リモートディレクトリにあるファイルとチェックサムを照合し (sumcmd) する。
+*	チェックサムが合致したら、最終的な宛先ローカルディレクトリ (to_dir) に移動する。
+
+### パラメタ
+  #   label
+  #   basedir
+  #   host
+  #   rdir
+  #   pattern
+  #   ext
+  #   to_dir
+  #   sumcmd (opt)
+
+
+## リモート退避機能
+### 型指定: `!ruby/object:PUSH`
+
+### 機能概要
+*	ローカルディレクトリ (basedir) 配下でパターン (pattern) に合致するファイルを、リモートディレクトリ (host, rdir) に複製 (`rsync`) する。
+
+### パラメタ
+  #   label
+  #   basedir
+  #   host
+  #   rdir
+  #   pattern
 
