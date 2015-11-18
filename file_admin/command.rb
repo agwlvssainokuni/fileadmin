@@ -150,7 +150,7 @@ module FileAdmin
           File.chown(u.uid, -1, path)
         else
           u = Etc.getpwnam(og[0])
-          g = Etc.getpwnam(og[1])
+          g = Etc.getgrnam(og[1])
           File.chown(u.uid, g.gid, path)
         end
         return true
