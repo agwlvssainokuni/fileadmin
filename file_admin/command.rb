@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright 2012,2014 agwlvssainokuni
+#  Copyright 2012,2015 agwlvssainokuni
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 
 require 'etc'
 require 'open3'
+require 'fileutils'
 require 'pathname'
 
 module FileAdmin
@@ -30,7 +31,7 @@ module FileAdmin
       return true if dry_run
       begin
         to_file = Pathname(path).join(File.basename(file))
-        File.rename(file, to_file)
+        FileUtils.mv(file, to_file)
         return true
       rescue Exception => err
         @logger.error("mv %s %s: NG, class=%s, message=%s",
