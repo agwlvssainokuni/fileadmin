@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright 2012,2014 agwlvssainokuni
+#  Copyright 2012,2016 agwlvssainokuni
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -74,7 +74,7 @@ module FileAdmin
           end
 
           return false unless zip_with_moving_files(arcfile, Array(f), dry_run)
-          @logger.notice("zip -mr %s %s: OK", arcfile, f)
+          @logger.info("zip -mr %s %s: OK", arcfile, f)
           unless is_empty?(@chown)
             return false unless chown(@chown, arcfile, dry_run)
           end

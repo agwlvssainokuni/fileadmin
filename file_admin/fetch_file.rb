@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright 2012,2014 agwlvssainokuni
+#  Copyright 2012,2016 agwlvssainokuni
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -63,7 +63,7 @@ module FileAdmin
         dest = "."
         filelist = Array(@pattern).flat_map {|pat|
           return false unless rsync(src, dest, pat, [], dry_run)
-          @logger.notice("rsync -a %s %s --include %s --exclude *: OK",
+          @logger.info("rsync -a %s %s --include %s --exclude *: OK",
                          src, dest, pat) unless dry_run
           Dir.glob(pat)
         }
@@ -75,18 +75,18 @@ module FileAdmin
 
         cmd = if is_empty?(@sumcmd); "sha1sum" else @sumcmd end
         return false unless checksum(@host, @rdir, filelist, cmd, dry_run)
-        @logger.notice("%s -b %s | ssh %s \"(cd %s; %s -c)\": OK",
+        @logger.info("%s -b %s | ssh %s \"(cd %s; %s -c)\": OK",
                        cmd, filelist * " ", @host, @rdir, cmd) unless dry_run
 
         filelist.each {|file|
 
           to_file = "#{file}.#{@ext}"
           return false unless rename(@host, @rdir, file, to_file, dry_run)
-          @logger.notice("ssh %s \"(cd %s; mv %s %s)\": OK",
+          @logger.info("ssh %s \"(cd %s; mv %s %s)\": OK",
                          @host, @rdir, file, to_file) unless dry_run
 
           return false unless mv(file, @to_dir, dry_run)
-          @logger.notice("mv %s %s: OK", file, @to_dir) unless dry_run
+          @logger.info("mv %s %s: OK", file, @to_dir) unless dry_run
         }
       }
 

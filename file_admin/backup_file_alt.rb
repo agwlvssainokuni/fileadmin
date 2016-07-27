@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright 2012,2014 agwlvssainokuni
+#  Copyright 2012,2016 agwlvssainokuni
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -63,7 +63,7 @@ module FileAdmin
         files.each {|file|
           next unless File.file?(file)
           return false unless mv(file, @to_dir, dry_run)
-          @logger.notice("mv %s %s: OK", file, @to_dir) unless dry_run
+          @logger.info("mv %s %s: OK", file, @to_dir) unless dry_run
         }
       }
 

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright 2012,2014 agwlvssainokuni
+#  Copyright 2012,2016 agwlvssainokuni
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -71,7 +71,7 @@ module FileAdmin
         collect_targets_by_threshold(threshold).each {|file|
           next unless File.file?(file)
           return false unless rm(file, dry_run)
-          @logger.notice("rm %s: OK", file) unless dry_run
+          @logger.info("rm %s: OK", file) unless dry_run
         }
       }
 

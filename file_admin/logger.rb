@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright 2012,2014 agwlvssainokuni
+#  Copyright 2012,2016 agwlvssainokuni
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -52,9 +52,9 @@ module FileAdmin
     end
 
     # 通知ログ (コンソール、SYSLOG)
-    def notice(msg, *arg)
-      console("NOTICE", msg, *arg)
-      syslog(LOG_NOTICE, "NOTICE", msg, *arg)
+    def info(msg, *arg)
+      console("INFO", msg, *arg)
+      syslog(LOG_INFO, "INFO", msg, *arg)
     end
 
     # エラーログ (コンソール、SYSLOG)

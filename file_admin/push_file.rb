@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright 2012,2014 agwlvssainokuni
+#  Copyright 2012,2016 agwlvssainokuni
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ module FileAdmin
         args = Array(@pattern).flat_map {|p| ["--include", p]}
         args << "--exclude" << "*" unless @pattern.nil? || @pattern.empty?
         args += option
-        @logger.notice("rsync -a %s %s %s: OK",
+        @logger.info("rsync -a %s %s %s: OK",
                        src, dest, args * " ") unless dry_run
       }
 
