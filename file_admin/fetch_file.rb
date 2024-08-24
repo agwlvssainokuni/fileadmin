@@ -1,6 +1,6 @@
-# -*- coding: utf-8 -*-
+# frozen_string_literal: true
 #
-#  Copyright 2012,2016 agwlvssainokuni
+#  Copyright 2012,2024 agwlvssainokuni
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -15,11 +15,11 @@
 #  limitations under the License.
 #
 
-require File.join(File.dirname(__FILE__), 'logger')
-require File.join(File.dirname(__FILE__), 'validation')
-require File.join(File.dirname(__FILE__), 'command')
-require File.join(File.dirname(__FILE__), 'selector')
-require File.join(File.dirname(__FILE__), 'time_utils')
+require_relative 'logger'
+require_relative 'validation'
+require_relative 'command'
+require_relative 'selector'
+require_relative 'time_utils'
 
 module FileAdmin
 
@@ -61,10 +61,10 @@ module FileAdmin
 
         src = "#{@host}:#{@rdir}"
         dest = "."
-        filelist = Array(@pattern).flat_map {|pat|
+        filelist = Array(@pattern).flat_map { |pat|
           return false unless rsync(src, dest, pat, [], dry_run)
           @logger.info("rsync -a %s %s --include %s --exclude *: OK",
-                         src, dest, pat) unless dry_run
+                       src, dest, pat) unless dry_run
           Dir.glob(pat)
         }
 
@@ -73,17 +73,21 @@ module FileAdmin
           return true
         end
 
-        cmd = if is_empty?(@sumcmd); "sha1sum" else @sumcmd end
+        cmd = if is_empty?(@sumcmd);
+                "sha1sum"
+              else
+                @sumcmd
+              end
         return false unless checksum(@host, @rdir, filelist, cmd, dry_run)
         @logger.info("%s -b %s | ssh %s \"(cd %s; %s -c)\": OK",
-                       cmd, filelist * " ", @host, @rdir, cmd) unless dry_run
+                     cmd, filelist * " ", @host, @rdir, cmd) unless dry_run
 
-        filelist.each {|file|
+        filelist.each { |file|
 
           to_file = "#{file}.#{@ext}"
           return false unless rename(@host, @rdir, file, to_file, dry_run)
           @logger.info("ssh %s \"(cd %s; mv %s %s)\": OK",
-                         @host, @rdir, file, to_file) unless dry_run
+                       @host, @rdir, file, to_file) unless dry_run
 
           return false unless mv(file, @to_dir, dry_run)
           @logger.info("mv %s %s: OK", file, @to_dir) unless dry_run

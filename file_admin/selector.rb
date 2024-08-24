@@ -1,6 +1,6 @@
-# -*- coding: utf-8 -*-
+# frozen_string_literal: true
 #
-#  Copyright 2012,2014 agwlvssainokuni
+#  Copyright 2012,2024 agwlvssainokuni
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -15,9 +15,9 @@
 #  limitations under the License.
 #
 
-require File.join(File.dirname(__FILE__), 'logger')
-require File.join(File.dirname(__FILE__), 'validation')
-require File.join(File.dirname(__FILE__), 'command')
+require_relative 'logger'
+require_relative 'validation'
+require_relative 'command'
 
 module FileAdmin
 
@@ -27,7 +27,7 @@ module FileAdmin
     # 対象を抽出してリストとして取得する。
     def collect_targets()
       list = []
-      Array(@pattern).each {|dirpat|
+      Array(@pattern).each { |dirpat|
         l = select_by_dir_pattern(dirpat)
         list += l.sort[0..-(@exclude.to_i + 1)]
       }
@@ -37,27 +37,28 @@ module FileAdmin
     # 閾値を指定して対象を抽出してリストとして取得する。
     def collect_targets_by_threshold(threshold)
       list = []
-      Array(@pattern).each {|prefix|
+      Array(@pattern).each { |prefix|
         pos = (prefix =~ /\/$/ ? 0 : File.basename(prefix).length)
         l = select_by_dir_pattern("#{prefix}*#{@suffix}")
-        list += l.sort.select {|name|
+        list += l.sort.select { |name|
           threshold > File.basename(name, @suffix.to_s)[pos..-1]
         }
       }
       return list
     end
 
-    # DIRパターンを指定して対象を取得する。
     private
+
+    # DIRパターンを指定して対象を取得する。
     def select_by_dir_pattern(dirpat)
       if @regexp.nil? || @regexp.empty?
         return Dir.glob(dirpat)
       else
         re = Regexp.new(@regexp)
         if @cond.nil? || @cond.empty?
-          return Dir.glob(dirpat).select {|name| name =~ re }
+          return Dir.glob(dirpat).select { |name| name =~ re }
         else
-          return Dir.glob(dirpat).select {|name|
+          return Dir.glob(dirpat).select { |name|
             next false unless name =~ re
             eval(@cond)
           }

@@ -1,6 +1,6 @@
-# -*- coding: utf-8 -*-
+# frozen_string_literal: true
 #
-#  Copyright 2012,2014 agwlvssainokuni
+#  Copyright 2012,2024 agwlvssainokuni
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.

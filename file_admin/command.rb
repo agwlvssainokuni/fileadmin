@@ -1,6 +1,6 @@
-# -*- coding: utf-8 -*-
+# frozen_string_literal: true
 #
-#  Copyright 2012,2015 agwlvssainokuni
+#  Copyright 2012,2024 agwlvssainokuni
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -71,8 +71,8 @@ module FileAdmin
       @logger.debug("processing: zip %s %s %s",
                     zip_opt, arcfile, filelist * " ")
       return true if dry_run
-      out, status = Open3.popen2e("zip", zip_opt, arcfile, "-@") {|si, so, th|
-        filelist.each {|file| si.puts(file) }
+      out, status = Open3.popen2e("zip", zip_opt, arcfile, "-@") { |si, so, th|
+        filelist.each { |file| si.puts(file) }
         si.close_write
         [so.readlines(nil), th.value]
       }
@@ -86,7 +86,7 @@ module FileAdmin
 
     # ディレクトリを同期 (RSYNC) する
     def rsync(src, dest, pattern, option, dry_run = false)
-      args = Array(pattern).flat_map {|p| ["--include", p]}
+      args = Array(pattern).flat_map { |p| ["--include", p] }
       args << "--exclude" << "*" unless pattern.nil? || pattern.empty?
       args += Array(option)
       @logger.debug("processing: rsync -a %s %s %s",
@@ -107,10 +107,10 @@ module FileAdmin
       @logger.debug("processing: %s -b %s | ssh %s \"%s\"",
                     sumcmd, filelist * " ", host, rcmd)
       return true if dry_run
-      out, err, status = IO.pipe {|err_r, err_w|
-        o, s = Open3.pipeline_r( [sumcmd, "-b", *filelist],
-                                 ["ssh", host, rcmd],
-                                 :err => err_w) {|so, th|
+      out, err, status = IO.pipe { |err_r, err_w|
+        o, s = Open3.pipeline_r([sumcmd, "-b", *filelist],
+                                ["ssh", host, rcmd],
+                                :err => err_w) { |so, th|
           [so.readlines(nil), [th[0].value, th[1].value]]
         }
         err_w.close

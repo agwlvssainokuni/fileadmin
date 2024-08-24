@@ -1,6 +1,6 @@
-# -*- coding: utf-8 -*-
+# frozen_string_literal: true
 #
-#  Copyright 2012,2014 agwlvssainokuni
+#  Copyright 2012,2024 agwlvssainokuni
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -15,15 +15,15 @@
 #  limitations under the License.
 #
 
-require File.join(File.dirname(__FILE__), 'logger')
-require File.join(File.dirname(__FILE__), 'foreach_archive')
-require File.join(File.dirname(__FILE__), 'aggregate_archive')
-require File.join(File.dirname(__FILE__), 'backup_file')
-require File.join(File.dirname(__FILE__), 'backup_file_alt')
-require File.join(File.dirname(__FILE__), 'cleanup_file')
-require File.join(File.dirname(__FILE__), 'cleanup_file_alt')
-require File.join(File.dirname(__FILE__), 'fetch_file')
-require File.join(File.dirname(__FILE__), 'push_file')
+require_relative 'logger'
+require_relative 'foreach_archive'
+require_relative 'aggregate_archive'
+require_relative 'backup_file'
+require_relative 'backup_file_alt'
+require_relative 'cleanup_file'
+require_relative 'cleanup_file_alt'
+require_relative 'fetch_file'
+require_relative 'push_file'
 
 FOREACH = FileAdmin::ForeachArchive
 AGGREGATE = FileAdmin::AggregateArchive

@@ -1,6 +1,6 @@
-# -*- coding: utf-8 -*-
+# frozen_string_literal: true
 #
-#  Copyright 2012,2016 agwlvssainokuni
+#  Copyright 2012,2024 agwlvssainokuni
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -15,10 +15,10 @@
 #  limitations under the License.
 #
 
-require File.join(File.dirname(__FILE__), 'logger')
-require File.join(File.dirname(__FILE__), 'validation')
-require File.join(File.dirname(__FILE__), 'command')
-require File.join(File.dirname(__FILE__), 'selector')
+require_relative 'logger'
+require_relative 'validation'
+require_relative 'command'
+require_relative 'selector'
 
 module FileAdmin
 
@@ -59,7 +59,7 @@ module FileAdmin
       Dir.chdir(@basedir) {
 
         files = collect_targets()
-        files = files.select {|f| File.file?(f) }
+        files = files.select { |f| File.file?(f) }
         if files.empty?
           @logger.debug("no files, skipped")
           return true

@@ -1,6 +1,6 @@
-# -*- coding: utf-8 -*-
+# frozen_string_literal: true
 #
-#  Copyright 2012,2016 agwlvssainokuni
+#  Copyright 2012,2024 agwlvssainokuni
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -30,18 +30,32 @@ module FileAdmin
 
     # コンソールへの出力
     @@console_enabled = false
-    def self.console_enabled=(v); @@console_enabled = v; end
-    def self.console_enabled; @@console_enabled; end
+
+    def self.console_enabled=(v)
+      @@console_enabled = v
+    end
+
+    def self.console_enabled
+      @@console_enabled
+    end
+
     def console(level, msg, *arg)
       printf("[#{level}] #{@label}#{msg}\n", *arg) if @@console_enabled
     end
 
     # SYSLOGへの出力
     @@syslog_enabled = true
-    def self.syslog_enabled=(v); @@syslog_enabled = v; end
-    def self.syslog_enabled; @@syslog_enabled; end
+
+    def self.syslog_enabled=(v)
+      @@syslog_enabled = v
+    end
+
+    def self.syslog_enabled
+      @@syslog_enabled
+    end
+
     def syslog(prio, level, msg, *arg)
-      Syslog.open("FILEADMIN") {|log|
+      Syslog.open("FILEADMIN") { |log|
         log.log(prio, "[#{level}] #{@label}#{msg}", *arg)
       } if @@syslog_enabled
     end
